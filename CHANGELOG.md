@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/cmd8/excalidraw-mcp/compare/v1.1.0...v1.1.1) (2025-11-27)
+
+
+### Bug Fixes
+
+* update MCP registry schema to latest version ([7d0ab7c](https://github.com/cmd8/excalidraw-mcp/commit/7d0ab7c25917fd71a6df80e148aeb0981ba44d54))
+
 # [1.1.0](https://github.com/cmd8/excalidraw-mcp/compare/v1.0.0...v1.1.0) (2025-11-27)
 
 
