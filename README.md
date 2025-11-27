@@ -1,24 +1,111 @@
-# excalidraw-mcp
+# @cmd8/excalidraw-mcp
 
 Model Context Protocol (MCP) server for Excalidraw diagrams.
 
-## Installation
+## 🛠️ Installation
 
-```bash
-npm install -g excalidraw-mcp
+### Requirements
+
+- Node.js >= v18.0.0
+
+<details>
+<summary><b>Install in Cursor</b></summary>
+
+Add to your Cursor MCP config (`~/.cursor/mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "excalidraw": {
+      "command": "npx",
+      "args": ["-y", "@cmd8/excalidraw-mcp", "--diagram", "/path/to/diagram.excalidraw"]
+    }
+  }
+}
 ```
 
-## Usage
+</details>
 
-```bash
-excalidraw-mcp --diagram /path/to/diagram.excalidraw
+<details>
+<summary><b>Install in Claude Code</b></summary>
+
+```sh
+claude mcp add excalidraw -- npx -y @cmd8/excalidraw-mcp --diagram /path/to/diagram.excalidraw
 ```
 
-### Options
+</details>
+
+<details>
+<summary><b>Install in Amp</b></summary>
+
+```sh
+amp mcp add excalidraw -- npx -y @cmd8/excalidraw-mcp --diagram /path/to/diagram.excalidraw
+```
+
+</details>
+
+<details>
+<summary><b>Install in VS Code</b></summary>
+
+Add to your VS Code MCP settings:
+
+```json
+{
+  "mcp": {
+    "servers": {
+      "excalidraw": {
+        "type": "stdio",
+        "command": "npx",
+        "args": ["-y", "@cmd8/excalidraw-mcp", "--diagram", "/path/to/diagram.excalidraw"]
+      }
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary><b>Install in Windsurf</b></summary>
+
+Add to your Windsurf MCP config:
+
+```json
+{
+  "mcpServers": {
+    "excalidraw": {
+      "command": "npx",
+      "args": ["-y", "@cmd8/excalidraw-mcp", "--diagram", "/path/to/diagram.excalidraw"]
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary><b>Install in Claude Desktop</b></summary>
+
+Add to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "excalidraw": {
+      "command": "npx",
+      "args": ["-y", "@cmd8/excalidraw-mcp", "--diagram", "/path/to/diagram.excalidraw"]
+    }
+  }
+}
+```
+
+</details>
+
+## CLI Options
 
 - `-d, --diagram` (required): Path to the Excalidraw diagram file
 
-## MCP Tools
+## 🔨 Available Tools
 
 ### `getFullDiagramState`
 
