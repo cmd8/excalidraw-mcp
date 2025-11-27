@@ -1,0 +1,22 @@
+{
+  "name": "excalidraw-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Model Context Protocol server for Excalidraw diagrams.",
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.22.0",
+    "eta": "^4.4.1",
+    "yargs": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.8.1",
+    "@types/yargs": "^17.0.35",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  }
+}
