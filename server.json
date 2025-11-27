@@ -1,0 +1,26 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
+  "name": "io.github.cmd8/excalidraw-mcp",
+  "description": "Model Context Protocol server for Excalidraw diagrams.",
+  "repository": {
+    "url": "https://github.com/cmd8/excalidraw-mcp",
+    "source": "github"
+  },
+  "version": "1.0.0",
+  "packages": [
+    {
+      "registry_type": "npm",
+      "registry_base_url": "https://registry.npmjs.org",
+      "identifier": "@cmd8/excalidraw-mcp",
+      "version": "1.0.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environment_variables": [],
+      "arguments": [
+        "--diagram",
+        "<path-to-excalidraw-file>"
+      ]
+    }
+  ]
+}

@@ -47,6 +47,7 @@
         "url": "https://github.com/cmd8/excalidraw-mcp/issues"
     },
     "homepage": "https://github.com/cmd8/excalidraw-mcp#readme",
+    "mcpName": "io.github.cmd8/excalidraw-mcp",
     "release": {
         "branches": [
             "main"
