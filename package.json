@@ -4,7 +4,6 @@
     "description": "Model Context Protocol server for Excalidraw diagrams.",
     "type": "module",
     "main": "dist/index.js",
-    "types": "dist/index.d.ts",
     "bin": {
         "excalidraw-mcp": "dist/index.js"
     },

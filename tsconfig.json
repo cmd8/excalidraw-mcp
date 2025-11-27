@@ -9,7 +9,6 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "outDir": "dist",
-    "declaration": true,
     "rootDir": "src",
     "types": ["node"]
   },
