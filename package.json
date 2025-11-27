@@ -1,22 +1,47 @@
 {
-  "name": "excalidraw-mcp",
-  "version": "0.1.0",
-  "private": true,
-  "description": "Model Context Protocol server for Excalidraw diagrams.",
-  "type": "module",
-  "scripts": {
-    "start": "tsx src/index.ts",
-    "typecheck": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.22.0",
-    "eta": "^4.4.1",
-    "yargs": "^18.0.0"
-  },
-  "devDependencies": {
-    "@types/node": "^24.8.1",
-    "@types/yargs": "^17.0.35",
-    "tsx": "^4.20.6",
-    "typescript": "^5.9.3"
-  }
+    "name": "excalidraw-mcp",
+    "version": "0.1.0",
+    "description": "Model Context Protocol server for Excalidraw diagrams.",
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "bin": {
+        "excalidraw-mcp": "dist/index.js"
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsc",
+        "prepublishOnly": "npm run build",
+        "start": "tsx src/index.ts",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.22.0",
+        "eta": "^4.4.1",
+        "yargs": "^18.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^24.8.1",
+        "@types/yargs": "^17.0.35",
+        "tsx": "^4.20.6",
+        "typescript": "^5.9.3"
+    },
+    "keywords": [
+        "mcp",
+        "model-context-protocol",
+        "excalidraw",
+        "diagram"
+    ],
+    "author": "Eugene Oldman",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/cmd8/excalidraw-mcp.git"
+    },
+    "bugs": {
+        "url": "https://github.com/cmd8/excalidraw-mcp/issues"
+    },
+    "homepage": "https://github.com/cmd8/excalidraw-mcp#readme"
 }
