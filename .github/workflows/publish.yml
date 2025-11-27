@@ -35,39 +35,7 @@ jobs:
       - run: pnpm install
       - run: pnpm build
 
-      - name: Get version before release
-        run: echo "VERSION_BEFORE=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
-
       - name: Release
         run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Check if new version was released
-        id: check_release
-        run: |
-          VERSION_AFTER=$(node -p "require('./package.json').version")
-          if [ "$VERSION_BEFORE" != "$VERSION_AFTER" ]; then
-            echo "new_release=true" >> $GITHUB_OUTPUT
-            echo "VERSION=$VERSION_AFTER" >> $GITHUB_ENV
-            echo "New version released: $VERSION_AFTER"
-          else
-            echo "new_release=false" >> $GITHUB_OUTPUT
-            echo "No new release"
-          fi
-
-      - name: Update server.json version
-        if: steps.check_release.outputs.new_release == 'true'
-        run: |
-          jq --arg v "$VERSION" '.version = $v | .packages[0].version = $v' server.json > tmp && mv tmp server.json
-
-      - name: Install MCP Publisher
-        if: steps.check_release.outputs.new_release == 'true'
-        run: |
-          curl -L "https://github.com/modelcontextprotocol/registry/releases/download/v1.3.3/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
-
-      - name: Publish to MCP Registry
-        if: steps.check_release.outputs.new_release == 'true'
-        run: |
-          ./mcp-publisher login github-oidc
-          ./mcp-publisher publish

@@ -24,6 +24,7 @@
     },
     "devDependencies": {
         "@semantic-release/changelog": "^6.0.3",
+        "@semantic-release/exec": "^7.1.0",
         "@semantic-release/git": "^10.0.1",
         "@types/node": "^24.8.1",
         "@types/yargs": "^17.0.35",
@@ -72,7 +73,13 @@
                     "message": "chore(release): ${nextRelease.version}"
                 }
             ],
-            "@semantic-release/github"
+            "@semantic-release/github",
+            [
+                "@semantic-release/exec",
+                {
+                    "successCmd": "./scripts/publish-mcp.sh ${nextRelease.version}"
+                }
+            ]
         ]
     }
 }
