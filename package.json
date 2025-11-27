@@ -23,8 +23,11 @@
         "yargs": "^18.0.0"
     },
     "devDependencies": {
+        "@semantic-release/changelog": "^6.0.3",
+        "@semantic-release/git": "^10.0.1",
         "@types/node": "^24.8.1",
         "@types/yargs": "^17.0.35",
+        "semantic-release": "^25.0.2",
         "tsx": "^4.20.6",
         "typescript": "^5.9.3"
     },
@@ -43,5 +46,32 @@
     "bugs": {
         "url": "https://github.com/cmd8/excalidraw-mcp/issues"
     },
-    "homepage": "https://github.com/cmd8/excalidraw-mcp#readme"
+    "homepage": "https://github.com/cmd8/excalidraw-mcp#readme",
+    "release": {
+        "branches": [
+            "main"
+        ],
+        "plugins": [
+            "@semantic-release/commit-analyzer",
+            "@semantic-release/release-notes-generator",
+            [
+                "@semantic-release/changelog",
+                {
+                    "changelogFile": "CHANGELOG.md"
+                }
+            ],
+            "@semantic-release/npm",
+            [
+                "@semantic-release/git",
+                {
+                    "assets": [
+                        "package.json",
+                        "CHANGELOG.md"
+                    ],
+                    "message": "chore(release): ${nextRelease.version}"
+                }
+            ],
+            "@semantic-release/github"
+        ]
+    }
 }
