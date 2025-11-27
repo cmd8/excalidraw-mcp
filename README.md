@@ -101,6 +101,19 @@ Add to your `claude_desktop_config.json`:
 
 </details>
 
+<details>
+<summary><b>Install in OpenAI Codex</b></summary>
+
+Add to your Codex MCP config:
+
+```toml
+[mcp_servers.excalidraw]
+command = "npx"
+args = ["-y", "@cmd8/excalidraw-mcp", "--diagram", "/path/to/diagram.excalidraw"]
+```
+
+</details>
+
 ## CLI Options
 
 - `-d, --diagram` (required): Path to the Excalidraw diagram file
