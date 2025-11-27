@@ -7,12 +7,13 @@ on:
     paths:
       - 'package.json'
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   publish:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
     steps:
       - uses: actions/checkout@v4
 
@@ -24,6 +25,9 @@ jobs:
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
+
+      - name: Update npm
+        run: npm install -g npm@latest
 
       - name: Check if version already published
         id: check
@@ -43,4 +47,4 @@ jobs:
         run: pnpm build
 
       - if: steps.check.outputs.exists == 'false'
-        run: pnpm publish --access public --no-git-checks --provenance
+        run: npm publish --access public
