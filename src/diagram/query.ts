@@ -20,9 +20,9 @@ export const findNodeByLabel = (
   const matching = elements.filter(
     (el): el is ExcalidrawElement & { text: string; containerId: string } =>
       el.type === 'text' &&
-      typeof el.text === 'string' &&
+      el.text != null &&
       el.text.trim().toLowerCase() === normalized &&
-      typeof el.containerId === 'string',
+      el.containerId != null,
   );
 
   if (matching.length === 0) {
@@ -97,9 +97,7 @@ export const calculateNextPosition = (
   elements: ExcalidrawElement[],
 ): { x: number; y: number } => {
   const shapes: Set<string> = new Set(shapeEnum.options);
-  const nodes = elements.filter(
-    (el) => typeof el.type === 'string' && shapes.has(el.type) && !el.isDeleted,
-  );
+  const nodes = elements.filter((el) => shapes.has(el.type) && !el.isDeleted);
 
   if (nodes.length === 0) {
     return { x: 100, y: 100 };

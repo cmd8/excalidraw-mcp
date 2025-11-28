@@ -9,6 +9,8 @@
 - AVOID `else` statements
 - AVOID using `any` type
 - AVOID `let` statements
+- AVOID `typeof x === 'string'` checks when TypeScript already knows the type; use `x != null` for optional fields
+- USE `typeof` checks only for defensive parsing of untrusted JSON or when checking optional number/boolean fields (where truthiness fails for `0`/`false`)
 - PREFER single word variable names where possible
 - ALWAYS run `pnpm fix` and `pnpm test:changed` after you finish the task 
 - ALWAYS check with the user to approve the commit message before you run `git commit` 
