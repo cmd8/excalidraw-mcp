@@ -51,6 +51,43 @@ const generateId = (): string =>
 
 const generateSeed = (): number => Math.floor(Math.random() * 2147483647);
 
+type BaseElementOptions = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  strokeColor?: string;
+  backgroundColor?: string;
+  strokeWidth?: number;
+  strokeStyle?: 'solid' | 'dashed';
+  link?: string | null;
+};
+
+const createBaseElement = (options: BaseElementOptions) => ({
+  id: generateId(),
+  x: options.x,
+  y: options.y,
+  width: options.width,
+  height: options.height,
+  angle: 0,
+  strokeColor: options.strokeColor ?? '#1e1e1e',
+  backgroundColor: options.backgroundColor ?? 'transparent',
+  fillStyle: 'solid' as const,
+  strokeWidth: options.strokeWidth ?? 1,
+  strokeStyle: options.strokeStyle ?? ('solid' as const),
+  roughness: 1,
+  opacity: 100,
+  groupIds: [] satisfies string[],
+  frameId: null,
+  seed: generateSeed(),
+  version: 1,
+  versionNonce: generateSeed(),
+  isDeleted: false,
+  updated: Date.now(),
+  link: options.link ?? null,
+  locked: false,
+});
+
 const estimateTextWidth = (text: string, fontSize: number): number => {
   const lines = text.split('\n');
   const maxLineLength = Math.max(...lines.map((line) => line.length));
@@ -77,81 +114,50 @@ export const createNodeElements = (
   } = options;
 
   const colors = colorPresets[color] ?? colorPresets['light-blue'];
-  const nodeId = generateId();
-  const textId = generateId();
   const fontSize = 16;
-
   const textWidth = estimateTextWidth(label, fontSize);
   const textHeight = estimateTextHeight(label, fontSize);
-
   const padding = 20;
   const width = explicitWidth ?? Math.max(textWidth + padding * 2, 100);
   const height = explicitHeight ?? Math.max(textHeight + padding * 2, 60);
 
-  const shapeElement: ExcalidrawElement = {
-    id: nodeId,
-    type: shape,
+  const shapeBase = createBaseElement({
     x,
     y,
     width,
     height,
-    angle: 0,
     strokeColor: colors.strokeColor,
     backgroundColor: colors.backgroundColor,
-    fillStyle: 'solid',
     strokeWidth: 1.4,
-    strokeStyle: 'solid',
-    roughness: 1,
-    opacity: 100,
-    groupIds: [],
-    frameId: null,
-    roundness: shape === 'rectangle' ? { type: 3 } : null,
-    seed: generateSeed(),
-    version: 1,
-    versionNonce: generateSeed(),
-    isDeleted: false,
-    boundElements: [{ id: textId, type: 'text' }],
-    updated: Date.now(),
-    link: link ?? null,
-    locked: false,
-  };
+    link,
+  });
 
-  const textX = x + (width - textWidth) / 2;
-  const textY = y + (height - textHeight) / 2;
-
-  const textElement: ExcalidrawElement = {
-    id: textId,
-    type: 'text',
-    x: textX,
-    y: textY,
+  const textBase = createBaseElement({
+    x: x + (width - textWidth) / 2,
+    y: y + (height - textHeight) / 2,
     width: textWidth,
     height: textHeight,
-    angle: 0,
-    strokeColor: '#1e1e1e',
-    backgroundColor: 'transparent',
-    fillStyle: 'solid',
-    strokeWidth: 1,
-    strokeStyle: 'solid',
-    roughness: 1,
-    opacity: 100,
-    groupIds: [],
-    frameId: null,
+  });
+
+  const shapeElement: ExcalidrawElement = {
+    ...shapeBase,
+    type: shape,
+    roundness: shape === 'rectangle' ? { type: 3 } : null,
+    boundElements: [{ id: textBase.id, type: 'text' }],
+  };
+
+  const textElement: ExcalidrawElement = {
+    ...textBase,
+    type: 'text',
     roundness: null,
-    seed: generateSeed(),
-    version: 1,
-    versionNonce: generateSeed(),
-    isDeleted: false,
     boundElements: [],
-    updated: Date.now(),
-    link: null,
-    locked: false,
     text: label,
     fontSize,
     fontFamily: 1,
     textAlign: 'center',
     verticalAlign: 'middle',
     baseline: fontSize + 2,
-    containerId: nodeId,
+    containerId: shapeBase.id,
     originalText: label,
     lineHeight: 1.25,
     autoResize: true,
@@ -227,32 +233,21 @@ export const createEdgeElements = (
   const toX = anchors.to.x;
   const toY = anchors.to.y;
 
-  const edgeElement: ExcalidrawElement = {
-    id: edgeId,
-    type: 'arrow',
+  const edgeBase = createBaseElement({
     x: fromX,
     y: fromY,
     width: Math.abs(toX - fromX),
     height: Math.abs(toY - fromY),
-    angle: 0,
-    strokeColor: '#1e1e1e',
-    backgroundColor: 'transparent',
-    fillStyle: 'solid',
     strokeWidth: 1.4,
     strokeStyle: style,
-    roughness: 1,
-    opacity: 100,
-    groupIds: [],
-    frameId: null,
+  });
+
+  const edgeElement: ExcalidrawElement = {
+    ...edgeBase,
+    id: edgeId,
+    type: 'arrow',
     roundness: { type: 2 },
-    seed: generateSeed(),
-    version: 1,
-    versionNonce: generateSeed(),
-    isDeleted: false,
     boundElements: label ? [{ id: `${edgeId}-label`, type: 'text' }] : [],
-    updated: Date.now(),
-    link: null,
-    locked: false,
     points: [
       [0, 0],
       [toX - fromX, toY - fromY],
@@ -279,36 +274,23 @@ export const createEdgeElements = (
     const fontSize = 16;
     const textWidth = estimateTextWidth(label, fontSize);
     const textHeight = estimateTextHeight(label, fontSize);
-
     const midX = fromX + (toX - fromX) / 2 - textWidth / 2;
     const midY = fromY + (toY - fromY) / 2 - textHeight / 2;
 
-    const labelElement: ExcalidrawElement = {
-      id: `${edgeId}-label`,
-      type: 'text',
+    const labelBase = createBaseElement({
       x: midX,
       y: midY,
       width: textWidth,
       height: textHeight,
-      angle: 0,
-      strokeColor: '#1e1e1e',
-      backgroundColor: 'transparent',
-      fillStyle: 'solid',
       strokeWidth: 2,
-      strokeStyle: 'solid',
-      roughness: 1,
-      opacity: 100,
-      groupIds: [],
-      frameId: null,
+    });
+
+    const labelElement: ExcalidrawElement = {
+      ...labelBase,
+      id: `${edgeId}-label`,
+      type: 'text',
       roundness: null,
-      seed: generateSeed(),
-      version: 1,
-      versionNonce: generateSeed(),
-      isDeleted: false,
       boundElements: [],
-      updated: Date.now(),
-      link: null,
-      locked: false,
       text: label,
       fontSize,
       fontFamily: 5,
