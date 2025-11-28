@@ -1,6 +1,6 @@
 import { createEdgeElements } from '@/diagram/create';
 import { resolveNodeByRole } from '@/diagram/query';
-import type { ExcalidrawElement, ExcalidrawFile } from '@/diagram/types';
+import type { ExcalidrawFile } from '@/diagram/types';
 import type { EdgeStyle } from '@/tools/schemas';
 import type { WriteHandlerResult } from './types';
 
@@ -15,9 +15,7 @@ export function createEdge(
   file: ExcalidrawFile,
   args: CreateEdgeArgs,
 ): WriteHandlerResult {
-  const elements: ExcalidrawElement[] = Array.isArray(file.elements)
-    ? file.elements
-    : [];
+  const elements = Array.isArray(file.elements) ? file.elements : [];
 
   const fromResult = resolveNodeByRole(elements, args.from, 'source');
   if (!fromResult.ok) return { ok: false, error: fromResult.error };
@@ -25,7 +23,7 @@ export function createEdge(
   const toResult = resolveNodeByRole(elements, args.to, 'target');
   if (!toResult.ok) return { ok: false, error: toResult.error };
 
-  const newElements = createEdgeElements(
+  const result = createEdgeElements(
     {
       fromNodeId: fromResult.node.id,
       toNodeId: toResult.node.id,
@@ -35,9 +33,11 @@ export function createEdge(
     elements,
   );
 
+  if (!result.ok) return { ok: false, error: result.error };
+
   return {
     ok: true,
-    file: { ...file, elements: [...elements, ...newElements] },
-    message: `Created edge with ID: ${newElements[0].id}`,
+    file: { ...file, elements: [...elements, ...result.elements] },
+    message: `Created edge with ID: ${result.elements[0].id}`,
   };
 }

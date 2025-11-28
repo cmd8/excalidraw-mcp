@@ -40,11 +40,10 @@ export function createNode(
   }
 
   const newElements = createNodeElements(options);
-  const nodeId = newElements[0].id;
 
   return {
     ok: true,
     file: { ...file, elements: [...elements, ...newElements] },
-    message: `Created node with ID: ${nodeId}`,
+    message: `Created node with ID: ${newElements[0].id}`,
   };
 }

@@ -26,6 +26,10 @@ export type CreateEdgeOptions = {
   style?: EdgeStyle;
 };
 
+export type CreateEdgeResult =
+  | { ok: true; elements: ExcalidrawElement[] }
+  | { ok: false; error: string };
+
 export const createNodeElements = (
   options: CreateNodeOptions,
 ): ExcalidrawElement[] => {
@@ -140,16 +144,17 @@ const calculateEdgeAnchors = (
 export const createEdgeElements = (
   options: CreateEdgeOptions,
   elements: ExcalidrawElement[],
-): ExcalidrawElement[] => {
+): CreateEdgeResult => {
   const { fromNodeId, toNodeId, label, style = 'solid' } = options;
 
   const fromNode = elements.find((el) => el.id === fromNodeId);
   const toNode = elements.find((el) => el.id === toNodeId);
 
   if (!fromNode || !toNode) {
-    throw new Error(
-      `Cannot create edge: node not found (from: ${fromNodeId}, to: ${toNodeId})`,
-    );
+    return {
+      ok: false,
+      error: `Cannot create edge: node not found (from: ${fromNodeId}, to: ${toNodeId})`,
+    };
   }
 
   const edgeId = generateId();
@@ -244,5 +249,5 @@ export const createEdgeElements = (
     toNode.boundElements = [{ id: edgeId, type: 'arrow' }];
   }
 
-  return result;
+  return { ok: true, elements: result };
 };
