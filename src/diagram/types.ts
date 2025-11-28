@@ -1,4 +1,6 @@
-export type ShapeType = 'rectangle' | 'ellipse' | 'diamond';
+import type { ShapeType } from '@/tools/schemas';
+
+export type { ShapeType };
 export type NodeShape = ShapeType | 'text';
 
 export type Frame = { id: string; name: string | null };

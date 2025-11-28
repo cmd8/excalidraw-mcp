@@ -1,5 +1,8 @@
+import { shapeEnum } from '@/tools/schemas';
 import { emojiForColorAndShape } from '@/utils/emoji';
 import type { Diagram, NodeShape } from './types';
+
+const nodeTypes: Set<string> = new Set([...shapeEnum.options, 'text']);
 
 type RawElement = {
   id?: string;
@@ -56,13 +59,6 @@ export const parseDiagram = (raw: RawFile): Diagram => {
           ? frame.name.trim()
           : null,
     }));
-
-  const nodeTypes = new Set<string>([
-    'rectangle',
-    'ellipse',
-    'diamond',
-    'text',
-  ]);
 
   const isNodeShape = (type: string): type is NodeShape => nodeTypes.has(type);
 

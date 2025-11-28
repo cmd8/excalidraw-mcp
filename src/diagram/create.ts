@@ -1,4 +1,4 @@
-import type { ShapeType } from './types.js';
+import { shapeEnum, type ShapeType } from '@/tools/schemas';
 
 export type ColorPreset =
   | 'transparent'
@@ -406,12 +406,9 @@ export const findNodeByLabel = (
 export const calculateNextPosition = (
   elements: ExcalidrawElement[],
 ): { x: number; y: number } => {
-  const nodeTypes = ['rectangle', 'ellipse', 'diamond'];
+  const shapes: Set<string> = new Set(shapeEnum.options);
   const nodes = elements.filter(
-    (el) =>
-      typeof el.type === 'string' &&
-      nodeTypes.includes(el.type) &&
-      !el.isDeleted,
+    (el) => typeof el.type === 'string' && shapes.has(el.type) && !el.isDeleted,
   );
 
   if (nodes.length === 0) {

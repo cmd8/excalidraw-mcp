@@ -1,4 +1,4 @@
-type ShapeType = 'rectangle' | 'ellipse' | 'diamond';
+import type { ShapeType } from '@/tools/schemas';
 
 type ColorFamily = 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple';
 

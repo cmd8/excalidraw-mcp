@@ -15,9 +15,8 @@
         "build": "tsc",
         "prepublishOnly": "npm run build",
         "start": "tsx src/index.ts",
-        "typecheck": "tsc --noEmit",
-        "lint": "eslint src",
-        "lint:fix": "eslint src --fix"
+        "check": "eslint src && tsc --noEmit",
+        "fix": "eslint src --fix && tsc --noEmit"
     },
     "dependencies": {
         "@modelcontextprotocol/sdk": "^1.22.0",
@@ -35,6 +34,7 @@
         "eslint": "^9.39.1",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-prettier": "^5.5.4",
+        "jiti": "^2.6.1",
         "prettier": "^3.7.1",
         "semantic-release": "^25.0.2",
         "tsx": "^4.20.6",

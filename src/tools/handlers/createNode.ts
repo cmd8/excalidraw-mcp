@@ -8,34 +8,12 @@ import {
   calculateNextPosition,
   createNodeElements,
 } from '@/diagram/create';
-import type { ShapeType } from '@/diagram/types';
-
-const shapes = new Set<string>(['rectangle', 'ellipse', 'diamond']);
-const colors = new Set<string>([
-  'transparent',
-  'light-blue',
-  'light-green',
-  'light-yellow',
-  'light-red',
-  'light-orange',
-  'light-purple',
-  'blue',
-  'green',
-  'yellow',
-  'red',
-  'orange',
-  'purple',
-]);
-
-const isShapeType = (v: unknown): v is ShapeType =>
-  typeof v === 'string' && shapes.has(v);
-const isColorPreset = (v: unknown): v is ColorPreset =>
-  typeof v === 'string' && colors.has(v);
+import type { ShapeType } from '@/tools/schemas';
 
 interface CreateNodeArgs {
   label: string;
-  shape?: string;
-  color?: string;
+  shape?: ShapeType;
+  color?: ColorPreset;
   link?: string;
   x?: number;
   y?: number;
@@ -54,8 +32,8 @@ export async function createNode(
 
   const options: CreateNodeOptions = {
     label: args.label,
-    shape: isShapeType(args.shape) ? args.shape : 'rectangle',
-    color: isColorPreset(args.color) ? args.color : 'light-blue',
+    shape: args.shape ?? 'rectangle',
+    color: args.color ?? 'light-blue',
     link: args.link,
     width: args.width,
     height: args.height,

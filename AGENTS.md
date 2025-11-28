@@ -10,4 +10,4 @@
 - AVOID using `any` type
 - AVOID `let` statements
 - PREFER single word variable names where possible
-- After you finish the task run `pnpm typecheck`
+- After you finish the task run `pnpm fix`
