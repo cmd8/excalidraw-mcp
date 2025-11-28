@@ -1,23 +1,20 @@
-import fs from 'node:fs/promises';
-
-import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-
 import { findNodeByLabel } from '@/diagram/create';
-import type { ExcalidrawElement } from '@/diagram/types';
+import type {
+  ExcalidrawElement,
+  ExcalidrawFile,
+  WriteResult,
+} from '@/diagram/types';
 
 interface DeleteElementArgs {
   id: string;
 }
 
-export async function deleteElement(
-  diagramPath: string,
+export function deleteElement(
+  file: ExcalidrawFile,
   args: DeleteElementArgs,
-): Promise<CallToolResult> {
-  const fileContent = await fs.readFile(diagramPath, 'utf8');
-  const parsed = JSON.parse(fileContent);
-
-  const elements: ExcalidrawElement[] = Array.isArray(parsed.elements)
-    ? parsed.elements
+): WriteResult {
+  const elements: ExcalidrawElement[] = Array.isArray(file.elements)
+    ? file.elements
     : [];
 
   let targetElement: ExcalidrawElement | undefined = elements.find(
@@ -30,13 +27,8 @@ export async function deleteElement(
         .map((m) => `  - "${m.label}" (ID: ${m.id})`)
         .join('\n');
       return {
-        content: [
-          {
-            type: 'text',
-            text: `Error: Multiple nodes found with label "${args.id}". Use ID instead:\n${options}`,
-          },
-        ],
-        isError: true,
+        ok: false,
+        error: `Error: Multiple nodes found with label "${args.id}". Use ID instead:\n${options}`,
       };
     }
     if (result.status === 'found') {
@@ -46,32 +38,31 @@ export async function deleteElement(
 
   if (!targetElement) {
     return {
-      content: [
-        { type: 'text', text: `Error: Could not find element "${args.id}"` },
-      ],
-      isError: true,
+      ok: false,
+      error: `Error: Could not find element "${args.id}"`,
     };
   }
 
   const targetId = targetElement.id;
 
-  for (const el of elements) {
+  const updatedElements = elements.map((el) => {
     if (el.id === targetId || el.containerId === targetId) {
-      el.isDeleted = true;
+      return { ...el, isDeleted: true };
     }
-  }
-
-  for (const el of elements) {
     if (Array.isArray(el.boundElements)) {
-      el.boundElements = el.boundElements.filter(
-        (bound) => bound.id !== targetId,
-      );
+      return {
+        ...el,
+        boundElements: el.boundElements.filter(
+          (bound) => bound.id !== targetId,
+        ),
+      };
     }
-  }
-
-  await fs.writeFile(diagramPath, JSON.stringify(parsed, null, 2), 'utf8');
+    return el;
+  });
 
   return {
-    content: [{ type: 'text', text: `Deleted element: ${targetId}` }],
+    ok: true,
+    file: { ...file, elements: updatedElements },
+    message: `Deleted element: ${targetId}`,
   };
 }

@@ -1,6 +1,6 @@
 ## IMPORTANT
 
-- Try to keep things in one function unless composable or reusable
+- PREFER to keep things in one function unless composable or reusable
 - DO NOT do unnecessary destructuring of variables
 - DO NOT use `else` statements unless necessary
 - DO NOT use `try`/`catch` if it can be avoided
@@ -10,8 +10,8 @@
 - AVOID using `any` type
 - AVOID `let` statements
 - PREFER single word variable names where possible
-- After you finish the task run `pnpm fix`
-- Before you run `git commit` ALWAYS check with the user to approve the commit message
+- ALWAYS run `pnpm fix` and `pnpm test:changed` after you finish the task 
+- ALWAYS check with the user to approve the commit message before you run `git commit` 
 
 ## TESTING
 
@@ -19,4 +19,10 @@
 - ALWAYS analyze actual call sites to understand what inputs are possible before writing tests
 - DO NOT test unreachable code paths (e.g., input validation for formats that callers never produce)
 - PREFER meaningful coverage over 100% coverage
-- RUN tests with `pnpm test` or `pnpm test:changed` for changed files
+- ALWAYS follow this example file and folder structure when creating tests:
+```
+src/some_dir
+├── moduleToTest.ts
+└── tests
+    └── moduleToTest.tests.ts
+```

@@ -1,12 +1,9 @@
-import fs from 'node:fs/promises';
-
-import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-
 import {
   type CreateNodeOptions,
   calculateNextPosition,
   createNodeElements,
 } from '@/diagram/create';
+import type { ExcalidrawFile, WriteResult } from '@/diagram/types';
 import type { ColorPreset, ShapeType } from '@/tools/schemas';
 
 interface CreateNodeArgs {
@@ -20,14 +17,11 @@ interface CreateNodeArgs {
   height?: number;
 }
 
-export async function createNode(
-  diagramPath: string,
+export function createNode(
+  file: ExcalidrawFile,
   args: CreateNodeArgs,
-): Promise<CallToolResult> {
-  const fileContent = await fs.readFile(diagramPath, 'utf8');
-  const parsed = JSON.parse(fileContent);
-
-  const elements = Array.isArray(parsed.elements) ? parsed.elements : [];
+): WriteResult {
+  const elements = Array.isArray(file.elements) ? file.elements : [];
 
   const options: CreateNodeOptions = {
     label: args.label,
@@ -50,11 +44,9 @@ export async function createNode(
   const newElements = createNodeElements(options);
   const nodeId = newElements[0].id;
 
-  parsed.elements = [...elements, ...newElements];
-
-  await fs.writeFile(diagramPath, JSON.stringify(parsed, null, 2), 'utf8');
-
   return {
-    content: [{ type: 'text', text: `Created node with ID: ${nodeId}` }],
+    ok: true,
+    file: { ...file, elements: [...elements, ...newElements] },
+    message: `Created node with ID: ${nodeId}`,
   };
 }

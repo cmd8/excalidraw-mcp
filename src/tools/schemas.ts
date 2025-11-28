@@ -1,8 +1,7 @@
 import { z } from 'zod';
 
 export const shapeEnum = z.enum(['rectangle', 'ellipse', 'diamond']);
-export type ShapeType = z.infer<typeof shapeEnum>;
-
+export const edgeStyleEnum = z.enum(['solid', 'dashed']);
 export const colorEnum = z.enum([
   'transparent',
   'light-blue',
@@ -19,7 +18,6 @@ export const colorEnum = z.enum([
   'purple',
 ]);
 
-export type ColorPreset = z.infer<typeof colorEnum>;
-
-export const edgeStyleEnum = z.enum(['solid', 'dashed']);
+export type ShapeType = z.infer<typeof shapeEnum>;
 export type EdgeStyle = z.infer<typeof edgeStyleEnum>;
+export type ColorPreset = z.infer<typeof colorEnum>;

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { emojiForColorAndShape } from './emoji';
+import { emojiForColorAndShape } from '../emoji';
 
 describe('emojiForColorAndShape', () => {
   it('returns correct emoji for each color family', () => {

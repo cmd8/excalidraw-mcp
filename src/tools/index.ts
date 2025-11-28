@@ -5,6 +5,7 @@ import { createEdge } from './handlers/createEdge';
 import { createNode } from './handlers/createNode';
 import { deleteElement } from './handlers/deleteElement';
 import { getFullDiagramState } from './handlers/getFullDiagramState';
+import { withDiagramRead, withDiagramWrite } from './middleware';
 import { colorEnum, edgeStyleEnum, shapeEnum } from './schemas';
 
 export function registerAllTools(server: McpServer, diagramPath: string) {
@@ -14,7 +15,7 @@ export function registerAllTools(server: McpServer, diagramPath: string) {
       description:
         'Return a markdown representation of the complete diagram, including nodes, relationships, labels, frames, and colors.',
     },
-    () => getFullDiagramState(diagramPath),
+    () => withDiagramRead(diagramPath, getFullDiagramState),
   );
 
   server.registerTool(
@@ -62,7 +63,7 @@ export function registerAllTools(server: McpServer, diagramPath: string) {
           .describe('Node height. If not provided, auto-sizes based on label.'),
       },
     },
-    (args) => createNode(diagramPath, args),
+    (args) => withDiagramWrite(diagramPath, (file) => createNode(file, args)),
   );
 
   server.registerTool(
@@ -82,7 +83,7 @@ export function registerAllTools(server: McpServer, diagramPath: string) {
           .describe('Line style. Defaults to solid.'),
       },
     },
-    (args) => createEdge(diagramPath, args),
+    (args) => withDiagramWrite(diagramPath, (file) => createEdge(file, args)),
   );
 
   server.registerTool(
@@ -93,6 +94,7 @@ export function registerAllTools(server: McpServer, diagramPath: string) {
         id: z.string().describe('The element ID or label text to delete.'),
       },
     },
-    (args) => deleteElement(diagramPath, args),
+    (args) =>
+      withDiagramWrite(diagramPath, (file) => deleteElement(file, args)),
   );
 }

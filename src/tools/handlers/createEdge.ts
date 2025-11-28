@@ -1,9 +1,9 @@
-import fs from 'node:fs/promises';
-
-import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
-
 import { createEdgeElements, findNodeByLabel } from '@/diagram/create';
-import type { ExcalidrawElement } from '@/diagram/types';
+import type {
+  ExcalidrawElement,
+  ExcalidrawFile,
+  WriteResult,
+} from '@/diagram/types';
 import type { EdgeStyle } from '@/tools/schemas';
 
 interface CreateEdgeArgs {
@@ -13,15 +13,12 @@ interface CreateEdgeArgs {
   style?: EdgeStyle;
 }
 
-export async function createEdge(
-  diagramPath: string,
+export function createEdge(
+  file: ExcalidrawFile,
   args: CreateEdgeArgs,
-): Promise<CallToolResult> {
-  const fileContent = await fs.readFile(diagramPath, 'utf8');
-  const parsed = JSON.parse(fileContent);
-
-  const elements: ExcalidrawElement[] = Array.isArray(parsed.elements)
-    ? parsed.elements
+): WriteResult {
+  const elements: ExcalidrawElement[] = Array.isArray(file.elements)
+    ? file.elements
     : [];
 
   let fromNode = elements.find((el) => el.id === args.from);
@@ -32,13 +29,8 @@ export async function createEdge(
         .map((m) => `  - "${m.label}" (ID: ${m.id})`)
         .join('\n');
       return {
-        content: [
-          {
-            type: 'text',
-            text: `Error: Multiple nodes found with label "${args.from}". Use ID instead:\n${options}`,
-          },
-        ],
-        isError: true,
+        ok: false,
+        error: `Error: Multiple nodes found with label "${args.from}". Use ID instead:\n${options}`,
       };
     }
     if (result.status === 'found') {
@@ -54,13 +46,8 @@ export async function createEdge(
         .map((m) => `  - "${m.label}" (ID: ${m.id})`)
         .join('\n');
       return {
-        content: [
-          {
-            type: 'text',
-            text: `Error: Multiple nodes found with label "${args.to}". Use ID instead:\n${options}`,
-          },
-        ],
-        isError: true,
+        ok: false,
+        error: `Error: Multiple nodes found with label "${args.to}". Use ID instead:\n${options}`,
       };
     }
     if (result.status === 'found') {
@@ -70,25 +57,15 @@ export async function createEdge(
 
   if (!fromNode) {
     return {
-      content: [
-        {
-          type: 'text',
-          text: `Error: Could not find source node "${args.from}"`,
-        },
-      ],
-      isError: true,
+      ok: false,
+      error: `Error: Could not find source node "${args.from}"`,
     };
   }
 
   if (!toNode) {
     return {
-      content: [
-        {
-          type: 'text',
-          text: `Error: Could not find target node "${args.to}"`,
-        },
-      ],
-      isError: true,
+      ok: false,
+      error: `Error: Could not find target node "${args.to}"`,
     };
   }
 
@@ -104,11 +81,9 @@ export async function createEdge(
 
   const edgeId = newElements[0].id;
 
-  parsed.elements = [...elements, ...newElements];
-
-  await fs.writeFile(diagramPath, JSON.stringify(parsed, null, 2), 'utf8');
-
   return {
-    content: [{ type: 'text', text: `Created edge with ID: ${edgeId}` }],
+    ok: true,
+    file: { ...file, elements: [...elements, ...newElements] },
+    message: `Created edge with ID: ${edgeId}`,
   };
 }
