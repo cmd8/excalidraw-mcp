@@ -1,4 +1,4 @@
-import { findNodeByLabel } from '@/diagram/query';
+import { resolveNode } from '@/diagram/query';
 import type { ExcalidrawElement, ExcalidrawFile } from '@/diagram/types';
 import type { WriteHandlerResult } from './types';
 
@@ -14,33 +14,10 @@ export function deleteElement(
     ? file.elements
     : [];
 
-  let targetElement: ExcalidrawElement | undefined = elements.find(
-    (el) => el.id === args.id,
-  );
-  if (!targetElement) {
-    const result = findNodeByLabel(elements, args.id);
-    if (result.status === 'ambiguous') {
-      const options = result.matches
-        .map((m) => `  - "${m.label}" (ID: ${m.id})`)
-        .join('\n');
-      return {
-        ok: false,
-        error: `Error: Multiple nodes found with label "${args.id}". Use ID instead:\n${options}`,
-      };
-    }
-    if (result.status === 'found') {
-      targetElement = result.node;
-    }
-  }
+  const result = resolveNode(elements, args.id);
+  if (!result.ok) return { ok: false, error: result.error };
 
-  if (!targetElement) {
-    return {
-      ok: false,
-      error: `Error: Could not find element "${args.id}"`,
-    };
-  }
-
-  const targetId = targetElement.id;
+  const targetId = result.node.id;
 
   const updatedElements = elements.map((el) => {
     if (el.id === targetId || el.containerId === targetId) {

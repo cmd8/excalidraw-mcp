@@ -1,8 +1,8 @@
 import { createEdgeElements } from '@/diagram/create';
-import { findNodeByLabel } from '@/diagram/query';
+import { resolveNodeByRole } from '@/diagram/query';
 import type { ExcalidrawElement, ExcalidrawFile } from '@/diagram/types';
-import type { WriteHandlerResult } from './types';
 import type { EdgeStyle } from '@/tools/schemas';
+import type { WriteHandlerResult } from './types';
 
 interface CreateEdgeArgs {
   from: string;
@@ -19,69 +19,25 @@ export function createEdge(
     ? file.elements
     : [];
 
-  let fromNode = elements.find((el) => el.id === args.from);
-  if (!fromNode) {
-    const result = findNodeByLabel(elements, args.from);
-    if (result.status === 'ambiguous') {
-      const options = result.matches
-        .map((m) => `  - "${m.label}" (ID: ${m.id})`)
-        .join('\n');
-      return {
-        ok: false,
-        error: `Error: Multiple nodes found with label "${args.from}". Use ID instead:\n${options}`,
-      };
-    }
-    if (result.status === 'found') {
-      fromNode = result.node;
-    }
-  }
+  const fromResult = resolveNodeByRole(elements, args.from, 'source');
+  if (!fromResult.ok) return { ok: false, error: fromResult.error };
 
-  let toNode = elements.find((el) => el.id === args.to);
-  if (!toNode) {
-    const result = findNodeByLabel(elements, args.to);
-    if (result.status === 'ambiguous') {
-      const options = result.matches
-        .map((m) => `  - "${m.label}" (ID: ${m.id})`)
-        .join('\n');
-      return {
-        ok: false,
-        error: `Error: Multiple nodes found with label "${args.to}". Use ID instead:\n${options}`,
-      };
-    }
-    if (result.status === 'found') {
-      toNode = result.node;
-    }
-  }
-
-  if (!fromNode) {
-    return {
-      ok: false,
-      error: `Error: Could not find source node "${args.from}"`,
-    };
-  }
-
-  if (!toNode) {
-    return {
-      ok: false,
-      error: `Error: Could not find target node "${args.to}"`,
-    };
-  }
+  const toResult = resolveNodeByRole(elements, args.to, 'target');
+  if (!toResult.ok) return { ok: false, error: toResult.error };
 
   const newElements = createEdgeElements(
     {
-      fromNodeId: fromNode.id,
-      toNodeId: toNode.id,
+      fromNodeId: fromResult.node.id,
+      toNodeId: toResult.node.id,
       label: args.label,
       style: args.style ?? 'solid',
     },
     elements,
   );
 
-  const edgeId = newElements[0].id;
-
   return {
     ok: true,
     file: { ...file, elements: [...elements, ...newElements] },
-    message: `Created edge with ID: ${edgeId}`,
+    message: `Created edge with ID: ${newElements[0].id}`,
   };
 }

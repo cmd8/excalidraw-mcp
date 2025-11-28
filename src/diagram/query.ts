@@ -1,6 +1,11 @@
 import { shapeEnum } from '@/tools/schemas';
 import type { ExcalidrawElement } from './types';
 
+export const findNodeById = (
+  elements: ExcalidrawElement[],
+  id: string,
+): ExcalidrawElement | undefined => elements.find((el) => el.id === id);
+
 export type FindNodeResult =
   | { status: 'found'; node: ExcalidrawElement }
   | { status: 'not-found' }
@@ -38,6 +43,54 @@ export const findNodeByLabel = (
   }
 
   return { status: 'found', node };
+};
+
+export type ResolveNodeResult =
+  | { ok: true; node: ExcalidrawElement }
+  | { ok: false; error: string };
+
+export const resolveNode = (
+  elements: ExcalidrawElement[],
+  identifier: string,
+): ResolveNodeResult => {
+  const node = findNodeById(elements, identifier);
+  if (node) return { ok: true, node };
+
+  const result = findNodeByLabel(elements, identifier);
+
+  if (result.status === 'found') return { ok: true, node: result.node };
+
+  if (result.status === 'ambiguous') {
+    const options = result.matches
+      .map((m) => `  - "${m.label}" (ID: ${m.id})`)
+      .join('\n');
+    return {
+      ok: false,
+      error: `Error: Multiple nodes found with label "${identifier}". Use ID instead:\n${options}`,
+    };
+  }
+
+  return {
+    ok: false,
+    error: `Error: Could not find node "${identifier}"`,
+  };
+};
+
+export const resolveNodeByRole = (
+  elements: ExcalidrawElement[],
+  identifier: string,
+  role: 'source' | 'target',
+): ResolveNodeResult => {
+  const result = resolveNode(elements, identifier);
+  if (result.ok) return result;
+
+  return {
+    ok: false,
+    error: result.error.replace(
+      'Could not find node',
+      `Could not find ${role} node`,
+    ),
+  };
 };
 
 export const calculateNextPosition = (
