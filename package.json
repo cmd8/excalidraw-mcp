@@ -20,7 +20,8 @@
     "dependencies": {
         "@modelcontextprotocol/sdk": "^1.22.0",
         "eta": "^4.4.1",
-        "yargs": "^18.0.0"
+        "yargs": "^18.0.0",
+        "zod": "^4.1.13"
     },
     "devDependencies": {
         "@semantic-release/changelog": "^6.0.3",
