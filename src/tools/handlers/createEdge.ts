@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 
-import { createEdgeElements, findNodeByLabel } from '../../diagram/create';
+import { type ExcalidrawElement, createEdgeElements, findNodeByLabel } from '../../diagram/create';
 
 interface CreateEdgeArgs {
   from: string;
@@ -15,9 +15,9 @@ export async function createEdge(diagramPath: string, args: CreateEdgeArgs): Pro
   const fileContent = await fs.readFile(diagramPath, 'utf8');
   const parsed = JSON.parse(fileContent);
 
-  const elements = Array.isArray(parsed.elements) ? parsed.elements : [];
+  const elements: ExcalidrawElement[] = Array.isArray(parsed.elements) ? parsed.elements : [];
 
-  let fromNode = elements.find((el: Record<string, unknown>) => el.id === args.from);
+  let fromNode = elements.find((el) => el.id === args.from);
   if (!fromNode) {
     const result = findNodeByLabel(elements, args.from);
     if (result.status === 'ambiguous') {
@@ -32,7 +32,7 @@ export async function createEdge(diagramPath: string, args: CreateEdgeArgs): Pro
     }
   }
 
-  let toNode = elements.find((el: Record<string, unknown>) => el.id === args.to);
+  let toNode = elements.find((el) => el.id === args.to);
   if (!toNode) {
     const result = findNodeByLabel(elements, args.to);
     if (result.status === 'ambiguous') {
@@ -63,15 +63,15 @@ export async function createEdge(diagramPath: string, args: CreateEdgeArgs): Pro
 
   const newElements = createEdgeElements(
     {
-      fromNodeId: fromNode.id as string,
-      toNodeId: toNode.id as string,
+      fromNodeId: fromNode.id,
+      toNodeId: toNode.id,
       label: args.label,
       style: args.style ?? 'solid',
     },
     elements,
   );
 
-  const edgeId = newElements[0].id as string;
+  const edgeId = newElements[0].id;
 
   parsed.elements = [...elements, ...newElements];
 

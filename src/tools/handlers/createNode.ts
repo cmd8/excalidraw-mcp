@@ -10,6 +10,15 @@ import {
 } from '../../diagram/create';
 import type { ShapeType } from '../../diagram/types';
 
+const shapes = new Set<string>(['rectangle', 'ellipse', 'diamond']);
+const colors = new Set<string>([
+  'transparent', 'light-blue', 'light-green', 'light-yellow', 'light-red',
+  'light-orange', 'light-purple', 'blue', 'green', 'yellow', 'red', 'orange', 'purple',
+]);
+
+const isShapeType = (v: unknown): v is ShapeType => typeof v === 'string' && shapes.has(v);
+const isColorPreset = (v: unknown): v is ColorPreset => typeof v === 'string' && colors.has(v);
+
 interface CreateNodeArgs {
   label: string;
   shape?: string;
@@ -29,8 +38,8 @@ export async function createNode(diagramPath: string, args: CreateNodeArgs): Pro
 
   const options: CreateNodeOptions = {
     label: args.label,
-    shape: (args.shape as ShapeType) ?? 'rectangle',
-    color: (args.color as ColorPreset) ?? 'light-blue',
+    shape: isShapeType(args.shape) ? args.shape : 'rectangle',
+    color: isColorPreset(args.color) ? args.color : 'light-blue',
     link: args.link,
     width: args.width,
     height: args.height,
@@ -46,7 +55,7 @@ export async function createNode(diagramPath: string, args: CreateNodeArgs): Pro
   }
 
   const newElements = createNodeElements(options);
-  const nodeId = newElements[0].id as string;
+  const nodeId = newElements[0].id;
 
   parsed.elements = [...elements, ...newElements];
 

@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 
-import { findNodeByLabel } from '../../diagram/create';
+import { type ExcalidrawElement, findNodeByLabel } from '../../diagram/create';
 
 interface DeleteElementArgs {
   id: string;
@@ -12,11 +12,11 @@ export async function deleteElement(diagramPath: string, args: DeleteElementArgs
   const fileContent = await fs.readFile(diagramPath, 'utf8');
   const parsed = JSON.parse(fileContent);
 
-  const elements: Record<string, unknown>[] = Array.isArray(parsed.elements)
+  const elements: ExcalidrawElement[] = Array.isArray(parsed.elements)
     ? parsed.elements
     : [];
 
-  let targetElement = elements.find((el) => el.id === args.id);
+  let targetElement: ExcalidrawElement | undefined = elements.find((el) => el.id === args.id);
   if (!targetElement) {
     const result = findNodeByLabel(elements, args.id);
     if (result.status === 'ambiguous') {
@@ -38,7 +38,7 @@ export async function deleteElement(diagramPath: string, args: DeleteElementArgs
     };
   }
 
-  const targetId = targetElement.id as string;
+  const targetId = targetElement.id;
 
   for (const el of elements) {
     if (el.id === targetId || el.containerId === targetId) {
@@ -48,9 +48,7 @@ export async function deleteElement(diagramPath: string, args: DeleteElementArgs
 
   for (const el of elements) {
     if (Array.isArray(el.boundElements)) {
-      el.boundElements = (el.boundElements as { id: string; type: string }[]).filter(
-        (bound) => bound.id !== targetId,
-      );
+      el.boundElements = el.boundElements.filter((bound) => bound.id !== targetId);
     }
   }
 

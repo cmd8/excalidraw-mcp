@@ -16,7 +16,7 @@ const argv = yargs(hideBin(process.argv))
     demandOption: true,
   })
   .strict()
-  .check((args: { diagram?: unknown }) => {
+  .check((args) => {
     if (typeof args.diagram !== 'string' || args.diagram.trim().length === 0) {
       throw new Error('Diagram path is required. Pass with -d <path> or --diagram <path>.');
     }
@@ -24,7 +24,7 @@ const argv = yargs(hideBin(process.argv))
   })
   .parseSync();
 
-const diagramPath = path.resolve(process.cwd(), (argv.diagram as string).trim());
+const diagramPath = path.resolve(process.cwd(), argv.diagram.trim());
 
 const server = new McpServer({ name: 'excalidraw-mcp', version: '0.1.0' });
 

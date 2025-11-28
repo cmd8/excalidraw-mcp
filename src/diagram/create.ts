@@ -54,7 +54,19 @@ export type CreateEdgeOptions = {
     style?: "solid" | "dashed";
 };
 
-type ExcalidrawElement = Record<string, unknown>;
+export type ExcalidrawElement = {
+    id: string;
+    type: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    text?: string;
+    containerId?: string | null;
+    isDeleted?: boolean;
+    boundElements?: { id: string; type: string }[] | null;
+    [key: string]: unknown;
+};
 
 const generateId = (): string => {
     return (
@@ -187,10 +199,7 @@ const getNodeAnchors = (
     right: Anchor;
     center: Anchor;
 } => {
-    const x = node.x as number;
-    const y = node.y as number;
-    const w = node.width as number;
-    const h = node.height as number;
+    const { x, y, width: w, height: h } = node;
 
     return {
         top: { x: x + w / 2, y },
@@ -370,10 +379,10 @@ export const findNodeByLabel = (
     const normalizedLabel = label.trim().toLowerCase();
 
     const matchingTextElements = elements.filter(
-        (el) =>
+        (el): el is ExcalidrawElement & { text: string; containerId: string } =>
             el.type === "text" &&
             typeof el.text === "string" &&
-            (el.text as string).trim().toLowerCase() === normalizedLabel &&
+            el.text.trim().toLowerCase() === normalizedLabel &&
             typeof el.containerId === "string",
     );
 
@@ -383,8 +392,8 @@ export const findNodeByLabel = (
 
     if (matchingTextElements.length > 1) {
         const matches = matchingTextElements.map((textEl) => ({
-            id: textEl.containerId as string,
-            label: (textEl.text as string).trim(),
+            id: textEl.containerId,
+            label: textEl.text.trim(),
         }));
         return { status: "ambiguous", matches };
     }
@@ -418,10 +427,10 @@ export const calculateNextPosition = (
     let correspondingX = 100;
 
     for (const node of nodes) {
-        const nodeY = (node.y as number) + (node.height as number);
+        const nodeY = node.y + node.height;
         if (nodeY > maxY) {
             maxY = nodeY;
-            correspondingX = node.x as number;
+            correspondingX = node.x;
         }
     }
 

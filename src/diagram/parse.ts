@@ -52,19 +52,21 @@ export const parseDiagram = (raw: RawFile): Diagram => {
         typeof frame.name === 'string' && frame.name.trim().length > 0 ? frame.name.trim() : null,
     }));
 
-  const nodeTypes: NodeShape[] = ['rectangle', 'ellipse', 'diamond', 'text'];
+  const nodeTypes = new Set<string>(['rectangle', 'ellipse', 'diamond', 'text']);
+
+const isNodeShape = (type: string): type is NodeShape => nodeTypes.has(type);
 
   const nodes = elements
     .filter((element): element is RawElement & { id: string; type: NodeShape } => {
       return (
         typeof element.id === 'string' &&
         typeof element.type === 'string' &&
-        nodeTypes.includes(element.type as NodeShape) &&
+        isNodeShape(element.type) &&
         (element.type !== 'text' || !element.containerId)
       );
     })
     .map((element) => {
-      const shape = element.type as NodeShape;
+      const shape = element.type;
       const label =
         (typeof element.id === 'string' && textByContainerId.get(element.id)) ||
         (typeof element.text === 'string' && element.text.trim().length > 0
