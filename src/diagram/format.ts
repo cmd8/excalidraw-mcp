@@ -28,7 +28,10 @@ const edgeLine = (edge: {
   return `${from} ${connector} ${to}${isSelfLoop ? ' (self-loop)' : ''}`;
 };
 
-const frameTitle = (params: { frameId: string | null; frameName: string | null }): string => {
+const frameTitle = (params: {
+  frameId: string | null;
+  frameName: string | null;
+}): string => {
   if (!params.frameId) {
     return 'No Frame';
   }
@@ -68,7 +71,10 @@ export const formatDiagramMarkdown = (diagram: Diagram): string => {
   type SectionKey = string | null;
   type GroupKey = string | null;
 
-  const sections = new Map<SectionKey, { title: string; groups: Map<GroupKey, GroupBucket> }>();
+  const sections = new Map<
+    SectionKey,
+    { title: string; groups: Map<GroupKey, GroupBucket> }
+  >();
 
   const ensureSection = (frameId: SectionKey) => {
     if (sections.has(frameId)) {
@@ -83,7 +89,10 @@ export const formatDiagramMarkdown = (diagram: Diagram): string => {
     return section;
   };
 
-  const ensureGroup = (section: { groups: Map<GroupKey, GroupBucket> }, groupId: GroupKey) => {
+  const ensureGroup = (
+    section: { groups: Map<GroupKey, GroupBucket> },
+    groupId: GroupKey,
+  ) => {
     if (section.groups.has(groupId)) {
       return section.groups.get(groupId)!;
     }
@@ -133,7 +142,10 @@ export const formatDiagramMarkdown = (diagram: Diagram): string => {
 
   const orderedSections: Section[] = [];
   for (const section of sections.values()) {
-    orderedSections.push({ title: section.title, groups: Array.from(section.groups.values()) });
+    orderedSections.push({
+      title: section.title,
+      groups: Array.from(section.groups.values()),
+    });
   }
 
   if (orderedSections.length === 0) {

@@ -12,12 +12,25 @@ import type { ShapeType } from '@/diagram/types';
 
 const shapes = new Set<string>(['rectangle', 'ellipse', 'diamond']);
 const colors = new Set<string>([
-  'transparent', 'light-blue', 'light-green', 'light-yellow', 'light-red',
-  'light-orange', 'light-purple', 'blue', 'green', 'yellow', 'red', 'orange', 'purple',
+  'transparent',
+  'light-blue',
+  'light-green',
+  'light-yellow',
+  'light-red',
+  'light-orange',
+  'light-purple',
+  'blue',
+  'green',
+  'yellow',
+  'red',
+  'orange',
+  'purple',
 ]);
 
-const isShapeType = (v: unknown): v is ShapeType => typeof v === 'string' && shapes.has(v);
-const isColorPreset = (v: unknown): v is ColorPreset => typeof v === 'string' && colors.has(v);
+const isShapeType = (v: unknown): v is ShapeType =>
+  typeof v === 'string' && shapes.has(v);
+const isColorPreset = (v: unknown): v is ColorPreset =>
+  typeof v === 'string' && colors.has(v);
 
 interface CreateNodeArgs {
   label: string;
@@ -30,7 +43,10 @@ interface CreateNodeArgs {
   height?: number;
 }
 
-export async function createNode(diagramPath: string, args: CreateNodeArgs): Promise<CallToolResult> {
+export async function createNode(
+  diagramPath: string,
+  args: CreateNodeArgs,
+): Promise<CallToolResult> {
   const fileContent = await fs.readFile(diagramPath, 'utf8');
   const parsed = JSON.parse(fileContent);
 

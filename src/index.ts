@@ -18,7 +18,9 @@ const argv = yargs(hideBin(process.argv))
   .strict()
   .check((args) => {
     if (typeof args.diagram !== 'string' || args.diagram.trim().length === 0) {
-      throw new Error('Diagram path is required. Pass with -d <path> or --diagram <path>.');
+      throw new Error(
+        'Diagram path is required. Pass with -d <path> or --diagram <path>.',
+      );
     }
     return true;
   })

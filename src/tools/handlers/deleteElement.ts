@@ -8,7 +8,10 @@ interface DeleteElementArgs {
   id: string;
 }
 
-export async function deleteElement(diagramPath: string, args: DeleteElementArgs): Promise<CallToolResult> {
+export async function deleteElement(
+  diagramPath: string,
+  args: DeleteElementArgs,
+): Promise<CallToolResult> {
   const fileContent = await fs.readFile(diagramPath, 'utf8');
   const parsed = JSON.parse(fileContent);
 
@@ -16,13 +19,22 @@ export async function deleteElement(diagramPath: string, args: DeleteElementArgs
     ? parsed.elements
     : [];
 
-  let targetElement: ExcalidrawElement | undefined = elements.find((el) => el.id === args.id);
+  let targetElement: ExcalidrawElement | undefined = elements.find(
+    (el) => el.id === args.id,
+  );
   if (!targetElement) {
     const result = findNodeByLabel(elements, args.id);
     if (result.status === 'ambiguous') {
-      const options = result.matches.map((m) => `  - "${m.label}" (ID: ${m.id})`).join('\n');
+      const options = result.matches
+        .map((m) => `  - "${m.label}" (ID: ${m.id})`)
+        .join('\n');
       return {
-        content: [{ type: 'text', text: `Error: Multiple nodes found with label "${args.id}". Use ID instead:\n${options}` }],
+        content: [
+          {
+            type: 'text',
+            text: `Error: Multiple nodes found with label "${args.id}". Use ID instead:\n${options}`,
+          },
+        ],
         isError: true,
       };
     }
@@ -33,7 +45,9 @@ export async function deleteElement(diagramPath: string, args: DeleteElementArgs
 
   if (!targetElement) {
     return {
-      content: [{ type: 'text', text: `Error: Could not find element "${args.id}"` }],
+      content: [
+        { type: 'text', text: `Error: Could not find element "${args.id}"` },
+      ],
       isError: true,
     };
   }
@@ -48,7 +62,9 @@ export async function deleteElement(diagramPath: string, args: DeleteElementArgs
 
   for (const el of elements) {
     if (Array.isArray(el.boundElements)) {
-      el.boundElements = el.boundElements.filter((bound) => bound.id !== targetId);
+      el.boundElements = el.boundElements.filter(
+        (bound) => bound.id !== targetId,
+      );
     }
   }
 

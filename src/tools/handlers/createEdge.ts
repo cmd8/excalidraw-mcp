@@ -2,7 +2,11 @@ import fs from 'node:fs/promises';
 
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 
-import { type ExcalidrawElement, createEdgeElements, findNodeByLabel } from '@/diagram/create';
+import {
+  type ExcalidrawElement,
+  createEdgeElements,
+  findNodeByLabel,
+} from '@/diagram/create';
 
 interface CreateEdgeArgs {
   from: string;
@@ -11,19 +15,31 @@ interface CreateEdgeArgs {
   style?: 'solid' | 'dashed';
 }
 
-export async function createEdge(diagramPath: string, args: CreateEdgeArgs): Promise<CallToolResult> {
+export async function createEdge(
+  diagramPath: string,
+  args: CreateEdgeArgs,
+): Promise<CallToolResult> {
   const fileContent = await fs.readFile(diagramPath, 'utf8');
   const parsed = JSON.parse(fileContent);
 
-  const elements: ExcalidrawElement[] = Array.isArray(parsed.elements) ? parsed.elements : [];
+  const elements: ExcalidrawElement[] = Array.isArray(parsed.elements)
+    ? parsed.elements
+    : [];
 
   let fromNode = elements.find((el) => el.id === args.from);
   if (!fromNode) {
     const result = findNodeByLabel(elements, args.from);
     if (result.status === 'ambiguous') {
-      const options = result.matches.map((m) => `  - "${m.label}" (ID: ${m.id})`).join('\n');
+      const options = result.matches
+        .map((m) => `  - "${m.label}" (ID: ${m.id})`)
+        .join('\n');
       return {
-        content: [{ type: 'text', text: `Error: Multiple nodes found with label "${args.from}". Use ID instead:\n${options}` }],
+        content: [
+          {
+            type: 'text',
+            text: `Error: Multiple nodes found with label "${args.from}". Use ID instead:\n${options}`,
+          },
+        ],
         isError: true,
       };
     }
@@ -36,9 +52,16 @@ export async function createEdge(diagramPath: string, args: CreateEdgeArgs): Pro
   if (!toNode) {
     const result = findNodeByLabel(elements, args.to);
     if (result.status === 'ambiguous') {
-      const options = result.matches.map((m) => `  - "${m.label}" (ID: ${m.id})`).join('\n');
+      const options = result.matches
+        .map((m) => `  - "${m.label}" (ID: ${m.id})`)
+        .join('\n');
       return {
-        content: [{ type: 'text', text: `Error: Multiple nodes found with label "${args.to}". Use ID instead:\n${options}` }],
+        content: [
+          {
+            type: 'text',
+            text: `Error: Multiple nodes found with label "${args.to}". Use ID instead:\n${options}`,
+          },
+        ],
         isError: true,
       };
     }
@@ -49,14 +72,24 @@ export async function createEdge(diagramPath: string, args: CreateEdgeArgs): Pro
 
   if (!fromNode) {
     return {
-      content: [{ type: 'text', text: `Error: Could not find source node "${args.from}"` }],
+      content: [
+        {
+          type: 'text',
+          text: `Error: Could not find source node "${args.from}"`,
+        },
+      ],
       isError: true,
     };
   }
 
   if (!toNode) {
     return {
-      content: [{ type: 'text', text: `Error: Could not find target node "${args.to}"` }],
+      content: [
+        {
+          type: 'text',
+          text: `Error: Could not find target node "${args.to}"`,
+        },
+      ],
       isError: true,
     };
   }
