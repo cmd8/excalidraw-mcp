@@ -1,31 +1,12 @@
+import type { ColorPreset, EdgeStyle, ShapeType } from '@/tools/schemas';
 import {
-  shapeEnum,
-  type ColorPreset,
-  type EdgeStyle,
-  type ShapeType,
-} from '@/tools/schemas';
+  colorPresets,
+  createBaseElement,
+  estimateTextHeight,
+  estimateTextWidth,
+  generateId,
+} from './primitives';
 import type { ExcalidrawElement } from './types';
-
-type ColorConfig = {
-  backgroundColor: string;
-  strokeColor: string;
-};
-
-const colorPresets: Record<ColorPreset, ColorConfig> = {
-  transparent: { backgroundColor: 'transparent', strokeColor: '#1e1e1e' },
-  'light-blue': { backgroundColor: '#dae8fc', strokeColor: '#6c8ebf' },
-  'light-green': { backgroundColor: '#d5e8d4', strokeColor: '#82b366' },
-  'light-yellow': { backgroundColor: '#fff2cc', strokeColor: '#d6b656' },
-  'light-red': { backgroundColor: '#f8cecc', strokeColor: '#b85450' },
-  'light-orange': { backgroundColor: '#ffe6cc', strokeColor: '#d79b00' },
-  'light-purple': { backgroundColor: '#e1d5e7', strokeColor: '#9673a6' },
-  blue: { backgroundColor: '#6c8ebf', strokeColor: '#1e1e1e' },
-  green: { backgroundColor: '#82b366', strokeColor: '#1e1e1e' },
-  yellow: { backgroundColor: '#d6b656', strokeColor: '#1e1e1e' },
-  red: { backgroundColor: '#b85450', strokeColor: '#1e1e1e' },
-  orange: { backgroundColor: '#d79b00', strokeColor: '#1e1e1e' },
-  purple: { backgroundColor: '#9673a6', strokeColor: '#1e1e1e' },
-};
 
 export type CreateNodeOptions = {
   label: string;
@@ -43,60 +24,6 @@ export type CreateEdgeOptions = {
   toNodeId: string;
   label?: string;
   style?: EdgeStyle;
-};
-
-const generateId = (): string =>
-  Math.random().toString(36).substring(2, 15) +
-  Math.random().toString(36).substring(2, 15);
-
-const generateSeed = (): number => Math.floor(Math.random() * 2147483647);
-
-type BaseElementOptions = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  strokeColor?: string;
-  backgroundColor?: string;
-  strokeWidth?: number;
-  strokeStyle?: 'solid' | 'dashed';
-  link?: string | null;
-};
-
-const createBaseElement = (options: BaseElementOptions) => ({
-  id: generateId(),
-  x: options.x,
-  y: options.y,
-  width: options.width,
-  height: options.height,
-  angle: 0,
-  strokeColor: options.strokeColor ?? '#1e1e1e',
-  backgroundColor: options.backgroundColor ?? 'transparent',
-  fillStyle: 'solid' as const,
-  strokeWidth: options.strokeWidth ?? 1,
-  strokeStyle: options.strokeStyle ?? ('solid' as const),
-  roughness: 1,
-  opacity: 100,
-  groupIds: [] satisfies string[],
-  frameId: null,
-  seed: generateSeed(),
-  version: 1,
-  versionNonce: generateSeed(),
-  isDeleted: false,
-  updated: Date.now(),
-  link: options.link ?? null,
-  locked: false,
-});
-
-const estimateTextWidth = (text: string, fontSize: number): number => {
-  const lines = text.split('\n');
-  const maxLineLength = Math.max(...lines.map((line) => line.length));
-  return maxLineLength * fontSize * 0.6;
-};
-
-const estimateTextHeight = (text: string, fontSize: number): number => {
-  const lines = text.split('\n');
-  return lines.length * fontSize * 1.25;
 };
 
 export const createNodeElements = (
@@ -305,7 +232,6 @@ export const createEdgeElements = (
     result.push(labelElement);
   }
 
-  // Update the source and target nodes' boundElements to include this edge
   if (Array.isArray(fromNode.boundElements)) {
     fromNode.boundElements.push({ id: edgeId, type: 'arrow' });
   } else {
@@ -319,71 +245,4 @@ export const createEdgeElements = (
   }
 
   return result;
-};
-
-export type FindNodeResult =
-  | { status: 'found'; node: ExcalidrawElement }
-  | { status: 'not-found' }
-  | { status: 'ambiguous'; matches: { id: string; label: string }[] };
-
-export const findNodeByLabel = (
-  elements: ExcalidrawElement[],
-  label: string,
-): FindNodeResult => {
-  const normalizedLabel = label.trim().toLowerCase();
-
-  const matchingTextElements = elements.filter(
-    (el): el is ExcalidrawElement & { text: string; containerId: string } =>
-      el.type === 'text' &&
-      typeof el.text === 'string' &&
-      el.text.trim().toLowerCase() === normalizedLabel &&
-      typeof el.containerId === 'string',
-  );
-
-  if (matchingTextElements.length === 0) {
-    return { status: 'not-found' };
-  }
-
-  if (matchingTextElements.length > 1) {
-    const matches = matchingTextElements.map((textEl) => ({
-      id: textEl.containerId,
-      label: textEl.text.trim(),
-    }));
-    return { status: 'ambiguous', matches };
-  }
-
-  const node = elements.find(
-    (el) => el.id === matchingTextElements[0].containerId,
-  );
-  if (!node) {
-    return { status: 'not-found' };
-  }
-
-  return { status: 'found', node };
-};
-
-export const calculateNextPosition = (
-  elements: ExcalidrawElement[],
-): { x: number; y: number } => {
-  const shapes: Set<string> = new Set(shapeEnum.options);
-  const nodes = elements.filter(
-    (el) => typeof el.type === 'string' && shapes.has(el.type) && !el.isDeleted,
-  );
-
-  if (nodes.length === 0) {
-    return { x: 100, y: 100 };
-  }
-
-  let maxY = -Infinity;
-  let correspondingX = 100;
-
-  for (const node of nodes) {
-    const nodeY = node.y + node.height;
-    if (nodeY > maxY) {
-      maxY = nodeY;
-      correspondingX = node.x;
-    }
-  }
-
-  return { x: correspondingX, y: maxY + 50 };
 };

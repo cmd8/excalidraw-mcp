@@ -1,9 +1,7 @@
-import { createEdgeElements, findNodeByLabel } from '@/diagram/create';
-import type {
-  ExcalidrawElement,
-  ExcalidrawFile,
-  WriteResult,
-} from '@/diagram/types';
+import { createEdgeElements } from '@/diagram/create';
+import { findNodeByLabel } from '@/diagram/query';
+import type { ExcalidrawElement, ExcalidrawFile } from '@/diagram/types';
+import type { WriteHandlerResult } from './types';
 import type { EdgeStyle } from '@/tools/schemas';
 
 interface CreateEdgeArgs {
@@ -16,7 +14,7 @@ interface CreateEdgeArgs {
 export function createEdge(
   file: ExcalidrawFile,
   args: CreateEdgeArgs,
-): WriteResult {
+): WriteHandlerResult {
   const elements: ExcalidrawElement[] = Array.isArray(file.elements)
     ? file.elements
     : [];

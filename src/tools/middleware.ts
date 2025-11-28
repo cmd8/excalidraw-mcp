@@ -2,7 +2,8 @@ import fs from 'node:fs/promises';
 
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 
-import type { ExcalidrawFile, ReadResult, WriteResult } from '@/diagram/types';
+import type { ExcalidrawFile } from '@/diagram/types';
+import type { ReadHandlerResult, WriteHandlerResult } from './handlers/types';
 
 async function loadDiagram(path: string): Promise<ExcalidrawFile> {
   const content = await fs.readFile(path, 'utf8');
@@ -16,7 +17,7 @@ async function saveDiagram(path: string, file: ExcalidrawFile): Promise<void> {
 
 export async function withDiagramRead(
   path: string,
-  handler: (file: ExcalidrawFile) => ReadResult,
+  handler: (file: ExcalidrawFile) => ReadHandlerResult,
 ): Promise<CallToolResult> {
   const file = await loadDiagram(path);
   const result = handler(file);
@@ -28,7 +29,7 @@ export async function withDiagramRead(
 
 export async function withDiagramWrite(
   path: string,
-  handler: (file: ExcalidrawFile) => WriteResult,
+  handler: (file: ExcalidrawFile) => WriteHandlerResult,
 ): Promise<CallToolResult> {
   const file = await loadDiagram(path);
   const result = handler(file);

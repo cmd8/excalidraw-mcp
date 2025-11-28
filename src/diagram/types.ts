@@ -44,11 +44,3 @@ export type ExcalidrawFile = {
   elements: ExcalidrawElement[];
   [key: string]: unknown;
 };
-
-export type ReadResult =
-  | { ok: true; message: string }
-  | { ok: false; error: string };
-
-export type WriteResult =
-  | { ok: true; file: ExcalidrawFile; message: string }
-  | { ok: false; error: string };

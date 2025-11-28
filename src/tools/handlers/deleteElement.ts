@@ -1,9 +1,6 @@
-import { findNodeByLabel } from '@/diagram/create';
-import type {
-  ExcalidrawElement,
-  ExcalidrawFile,
-  WriteResult,
-} from '@/diagram/types';
+import { findNodeByLabel } from '@/diagram/query';
+import type { ExcalidrawElement, ExcalidrawFile } from '@/diagram/types';
+import type { WriteHandlerResult } from './types';
 
 interface DeleteElementArgs {
   id: string;
@@ -12,7 +9,7 @@ interface DeleteElementArgs {
 export function deleteElement(
   file: ExcalidrawFile,
   args: DeleteElementArgs,
-): WriteResult {
+): WriteHandlerResult {
   const elements: ExcalidrawElement[] = Array.isArray(file.elements)
     ? file.elements
     : [];

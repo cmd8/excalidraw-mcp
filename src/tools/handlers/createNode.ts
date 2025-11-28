@@ -1,9 +1,7 @@
-import {
-  type CreateNodeOptions,
-  calculateNextPosition,
-  createNodeElements,
-} from '@/diagram/create';
-import type { ExcalidrawFile, WriteResult } from '@/diagram/types';
+import { type CreateNodeOptions, createNodeElements } from '@/diagram/create';
+import { calculateNextPosition } from '@/diagram/query';
+import type { ExcalidrawFile } from '@/diagram/types';
+import type { WriteHandlerResult } from './types';
 import type { ColorPreset, ShapeType } from '@/tools/schemas';
 
 interface CreateNodeArgs {
@@ -20,7 +18,7 @@ interface CreateNodeArgs {
 export function createNode(
   file: ExcalidrawFile,
   args: CreateNodeArgs,
-): WriteResult {
+): WriteHandlerResult {
   const elements = Array.isArray(file.elements) ? file.elements : [];
 
   const options: CreateNodeOptions = {
