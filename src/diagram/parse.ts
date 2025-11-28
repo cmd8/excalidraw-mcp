@@ -1,4 +1,4 @@
-import { emojiForColorAndShape } from '../utils/emoji';
+import { emojiForColorAndShape } from '@/utils/emoji';
 import type { Diagram, NodeShape } from './types';
 
 type RawElement = {

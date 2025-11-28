@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 
-import { type ExcalidrawElement, createEdgeElements, findNodeByLabel } from '../../diagram/create';
+import { type ExcalidrawElement, createEdgeElements, findNodeByLabel } from '@/diagram/create';
 
 interface CreateEdgeArgs {
   from: string;

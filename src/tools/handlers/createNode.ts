@@ -7,8 +7,8 @@ import {
   type CreateNodeOptions,
   calculateNextPosition,
   createNodeElements,
-} from '../../diagram/create';
-import type { ShapeType } from '../../diagram/types';
+} from '@/diagram/create';
+import type { ShapeType } from '@/diagram/types';
 
 const shapes = new Set<string>(['rectangle', 'ellipse', 'diamond']);
 const colors = new Set<string>([
