@@ -1,19 +1,6 @@
-import { shapeEnum, type ShapeType } from '@/tools/schemas';
+import { shapeEnum, type ColorPreset, type ShapeType } from '@/tools/schemas';
 
-export type ColorPreset =
-  | 'transparent'
-  | 'light-blue'
-  | 'light-green'
-  | 'light-yellow'
-  | 'light-red'
-  | 'light-orange'
-  | 'light-purple'
-  | 'blue'
-  | 'green'
-  | 'yellow'
-  | 'red'
-  | 'orange'
-  | 'purple';
+export type { ColorPreset };
 
 type ColorConfig = {
   backgroundColor: string;

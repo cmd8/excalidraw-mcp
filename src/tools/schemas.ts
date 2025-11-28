@@ -18,4 +18,7 @@ export const colorEnum = z.enum([
   'orange',
   'purple',
 ]);
+
+export type ColorPreset = z.infer<typeof colorEnum>;
+
 export const edgeStyleEnum = z.enum(['solid', 'dashed']);
