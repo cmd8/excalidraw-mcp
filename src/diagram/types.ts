@@ -1,6 +1,5 @@
 import type { ShapeType } from '@/tools/schemas';
 
-export type { ShapeType };
 export type NodeShape = ShapeType | 'text';
 
 export type Frame = { id: string; name: string | null };
@@ -26,3 +25,17 @@ export type Edge = {
 };
 
 export type Diagram = { nodes: Node[]; edges: Edge[]; frames: Frame[] };
+
+export type ExcalidrawElement = {
+  id: string;
+  type: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  text?: string;
+  containerId?: string | null;
+  isDeleted?: boolean;
+  boundElements?: { id: string; type: string }[] | null;
+  [key: string]: unknown;
+};

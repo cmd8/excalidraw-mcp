@@ -1,6 +1,10 @@
-import { shapeEnum, type ColorPreset, type ShapeType } from '@/tools/schemas';
-
-export type { ColorPreset };
+import {
+  shapeEnum,
+  type ColorPreset,
+  type EdgeStyle,
+  type ShapeType,
+} from '@/tools/schemas';
+import type { ExcalidrawElement } from './types';
 
 type ColorConfig = {
   backgroundColor: string;
@@ -38,21 +42,7 @@ export type CreateEdgeOptions = {
   fromNodeId: string;
   toNodeId: string;
   label?: string;
-  style?: 'solid' | 'dashed';
-};
-
-export type ExcalidrawElement = {
-  id: string;
-  type: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  text?: string;
-  containerId?: string | null;
-  isDeleted?: boolean;
-  boundElements?: { id: string; type: string }[] | null;
-  [key: string]: unknown;
+  style?: EdgeStyle;
 };
 
 const generateId = (): string =>

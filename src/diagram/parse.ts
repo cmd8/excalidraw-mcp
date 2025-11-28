@@ -4,6 +4,7 @@ import type { Diagram, NodeShape } from './types';
 
 const nodeTypes: Set<string> = new Set([...shapeEnum.options, 'text']);
 
+// Separate from ExcalidrawElement - all fields optional for defensive parsing of untrusted JSON
 type RawElement = {
   id?: string;
   type?: string;

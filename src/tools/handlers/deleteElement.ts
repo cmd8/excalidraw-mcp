@@ -2,7 +2,8 @@ import fs from 'node:fs/promises';
 
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 
-import { type ExcalidrawElement, findNodeByLabel } from '@/diagram/create';
+import { findNodeByLabel } from '@/diagram/create';
+import type { ExcalidrawElement } from '@/diagram/types';
 
 interface DeleteElementArgs {
   id: string;

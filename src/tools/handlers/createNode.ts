@@ -3,12 +3,11 @@ import fs from 'node:fs/promises';
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 
 import {
-  type ColorPreset,
   type CreateNodeOptions,
   calculateNextPosition,
   createNodeElements,
 } from '@/diagram/create';
-import type { ShapeType } from '@/tools/schemas';
+import type { ColorPreset, ShapeType } from '@/tools/schemas';
 
 interface CreateNodeArgs {
   label: string;

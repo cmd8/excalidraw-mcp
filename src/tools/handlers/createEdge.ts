@@ -2,17 +2,15 @@ import fs from 'node:fs/promises';
 
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 
-import {
-  type ExcalidrawElement,
-  createEdgeElements,
-  findNodeByLabel,
-} from '@/diagram/create';
+import { createEdgeElements, findNodeByLabel } from '@/diagram/create';
+import type { ExcalidrawElement } from '@/diagram/types';
+import type { EdgeStyle } from '@/tools/schemas';
 
 interface CreateEdgeArgs {
   from: string;
   to: string;
   label?: string;
-  style?: 'solid' | 'dashed';
+  style?: EdgeStyle;
 }
 
 export async function createEdge(
