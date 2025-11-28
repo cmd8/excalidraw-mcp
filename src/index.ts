@@ -6,7 +6,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
-import { registerAllTools } from './tools/index.js';
+import { registerAllTools } from './tools/index';
 
 const argv = yargs(hideBin(process.argv))
   .option('diagram', {

@@ -1,4 +1,4 @@
-import type { Diagram, Node } from './types.js';
+import type { Diagram, Node } from './types';
 
 type GroupBucket = { title: string; edges: string[]; nodes: string[] };
 

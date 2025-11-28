@@ -7,8 +7,8 @@ import {
   type CreateNodeOptions,
   calculateNextPosition,
   createNodeElements,
-} from '../../diagram/create.js';
-import type { ShapeType } from '../../diagram/types.js';
+} from '../../diagram/create';
+import type { ShapeType } from '../../diagram/types';
 
 interface CreateNodeArgs {
   label: string;

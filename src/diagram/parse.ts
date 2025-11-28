@@ -1,5 +1,5 @@
-import { emojiForColorAndShape } from '../utils/emoji.js';
-import type { Diagram, NodeShape } from './types.js';
+import { emojiForColorAndShape } from '../utils/emoji';
+import type { Diagram, NodeShape } from './types';
 
 type RawElement = {
   id?: string;

@@ -1,11 +1,11 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 
-import { createEdge } from './handlers/createEdge.js';
-import { createNode } from './handlers/createNode.js';
-import { deleteElement } from './handlers/deleteElement.js';
-import { getFullDiagramState } from './handlers/getFullDiagramState.js';
-import { colorEnum, edgeStyleEnum, shapeEnum } from './schemas.js';
+import { createEdge } from './handlers/createEdge';
+import { createNode } from './handlers/createNode';
+import { deleteElement } from './handlers/deleteElement';
+import { getFullDiagramState } from './handlers/getFullDiagramState';
+import { colorEnum, edgeStyleEnum, shapeEnum } from './schemas';
 
 export function registerAllTools(server: McpServer, diagramPath: string) {
   server.registerTool(

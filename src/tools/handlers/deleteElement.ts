@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 
 import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 
-import { findNodeByLabel } from '../../diagram/create.js';
+import { findNodeByLabel } from '../../diagram/create';
 
 interface DeleteElementArgs {
   id: string;
