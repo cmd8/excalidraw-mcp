@@ -120,6 +120,18 @@ args = ["-y", "@cmd8/excalidraw-mcp", "--diagram", "/path/to/diagram.excalidraw"
 
 ## 🔨 Available Tools
 
+### `createNode`
+
+Create a new node (shape with label) in the diagram. Returns the created node ID.
+
+### `createEdge`
+
+Create an arrow connecting two nodes. Nodes can be referenced by ID or by label text.
+
+### `deleteElement`
+
+Delete a node or edge from the diagram by ID or label.
+
 ### `getFullDiagramState`
 
 Returns a markdown representation of the complete diagram, including nodes, relationships, labels, frames, and colors.
