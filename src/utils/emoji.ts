@@ -1,4 +1,4 @@
-type ShapeType = 'rectangle' | 'ellipse' | 'diamond';
+import type { ShapeType } from '@/tools/schemas';
 
 type ColorFamily = 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple';
 
@@ -102,7 +102,10 @@ const normalizeShape = (shape: string): ShapeType | null => {
   return null;
 };
 
-export const emojiForColorAndShape = (hex: string, shape: string): string | null => {
+export const emojiForColorAndShape = (
+  hex: string,
+  shape: string,
+): string | null => {
   const normalizedShape = normalizeShape(shape);
   if (!normalizedShape) {
     return null;

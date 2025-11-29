@@ -1,6 +1,13 @@
-import { emojiForColorAndShape } from '../utils/emoji.js';
-import type { Diagram, NodeShape } from './types.js';
+import { shapeEnum } from '@/tools/schemas';
+import { emojiForColorAndShape } from '@/utils/emoji';
+import { ElementType, type Diagram, type NodeShape } from './types';
 
+const nodeTypes: Set<string> = new Set([
+  ...shapeEnum.options,
+  ElementType.Text,
+]);
+
+// Separate from ExcalidrawElement - all fields optional for defensive parsing of untrusted JSON
 type RawElement = {
   id?: string;
   type?: string;
@@ -24,7 +31,9 @@ export const parseDiagram = (raw: RawFile): Diagram => {
     return { nodes: [], edges: [], frames: [] };
   }
 
-  const elements = raw.elements.filter((element) => element && element.isDeleted !== true);
+  const elements = raw.elements.filter(
+    (element) => element && element.isDeleted !== true,
+  );
 
   // Map parent id to text from a bound text element for quick label lookup.
   const textByContainerId = new Map<string, string>();
@@ -43,28 +52,32 @@ export const parseDiagram = (raw: RawFile): Diagram => {
   }
 
   const frames = elements
-    .filter((element): element is RawElement & { id: string; type: 'frame' } => {
-      return element.type === 'frame' && typeof element.id === 'string';
-    })
+    .filter(
+      (
+        element,
+      ): element is RawElement & { id: string; type: ElementType.Frame } =>
+        element.type === ElementType.Frame && typeof element.id === 'string',
+    )
     .map((frame) => ({
       id: frame.id,
       name:
-        typeof frame.name === 'string' && frame.name.trim().length > 0 ? frame.name.trim() : null,
+        typeof frame.name === 'string' && frame.name.trim().length > 0
+          ? frame.name.trim()
+          : null,
     }));
 
-  const nodeTypes: NodeShape[] = ['rectangle', 'ellipse', 'diamond', 'text'];
+  const isNodeShape = (type: string): type is NodeShape => nodeTypes.has(type);
 
   const nodes = elements
-    .filter((element): element is RawElement & { id: string; type: NodeShape } => {
-      return (
+    .filter(
+      (element): element is RawElement & { id: string; type: NodeShape } =>
         typeof element.id === 'string' &&
         typeof element.type === 'string' &&
-        nodeTypes.includes(element.type as NodeShape) &&
-        (element.type !== 'text' || !element.containerId)
-      );
-    })
+        isNodeShape(element.type) &&
+        (element.type !== ElementType.Text || !element.containerId),
+    )
     .map((element) => {
-      const shape = element.type as NodeShape;
+      const shape = element.type;
       const label =
         (typeof element.id === 'string' && textByContainerId.get(element.id)) ||
         (typeof element.text === 'string' && element.text.trim().length > 0
@@ -72,12 +85,15 @@ export const parseDiagram = (raw: RawFile): Diagram => {
           : null);
 
       const backgroundColor =
-        typeof element.backgroundColor === 'string' && element.backgroundColor.length > 0
+        typeof element.backgroundColor === 'string' &&
+        element.backgroundColor.length > 0
           ? element.backgroundColor
           : null;
 
       const emoji =
-        backgroundColor && shape !== 'text' ? emojiForColorAndShape(backgroundColor, shape) : null;
+        backgroundColor && shape !== 'text'
+          ? emojiForColorAndShape(backgroundColor, shape)
+          : null;
 
       const groupIds = Array.isArray(element.groupIds)
         ? element.groupIds.filter((id): id is string => typeof id === 'string')
@@ -89,20 +105,28 @@ export const parseDiagram = (raw: RawFile): Diagram => {
         shape,
         backgroundColor,
         emoji,
-        link: typeof element.link === 'string' && element.link.length > 0 ? element.link : null,
+        link:
+          typeof element.link === 'string' && element.link.length > 0
+            ? element.link
+            : null,
         groupIds,
         frameId: typeof element.frameId === 'string' ? element.frameId : null,
       };
     });
 
   const edges = elements
-    .filter((element): element is RawElement & { id: string; type: 'arrow' } => {
-      return element.type === 'arrow' && typeof element.id === 'string';
-    })
+    .filter(
+      (
+        element,
+      ): element is RawElement & { id: string; type: ElementType.Arrow } =>
+        element.type === ElementType.Arrow && typeof element.id === 'string',
+    )
     .map((edge) => {
       const label =
         (typeof edge.id === 'string' && textByContainerId.get(edge.id)) ||
-        (typeof edge.text === 'string' && edge.text.trim().length > 0 ? edge.text.trim() : null);
+        (typeof edge.text === 'string' && edge.text.trim().length > 0
+          ? edge.text.trim()
+          : null);
 
       const groupIds = Array.isArray(edge.groupIds)
         ? edge.groupIds.filter((id): id is string => typeof id === 'string')

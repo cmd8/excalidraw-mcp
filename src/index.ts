@@ -1,15 +1,12 @@
 #!/usr/bin/env node
-import fs from 'node:fs/promises';
 import path from 'node:path';
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
-import { formatDiagramMarkdown } from './diagram/format.js';
-import { parseDiagram } from './diagram/parse.js';
+import { registerAllTools } from './tools/index';
 
 const argv = yargs(hideBin(process.argv))
   .option('diagram', {
@@ -19,34 +16,21 @@ const argv = yargs(hideBin(process.argv))
     demandOption: true,
   })
   .strict()
-  .check((args: { diagram?: unknown }) => {
-    if (typeof args.diagram !== 'string' || args.diagram.trim().length === 0) {
-      throw new Error('Diagram path is required. Pass with -d <path> or --diagram <path>.');
+  .check((args) => {
+    if (args.diagram.trim().length === 0) {
+      throw new Error(
+        'Diagram path is required. Pass with -d <path> or --diagram <path>.',
+      );
     }
     return true;
   })
   .parseSync();
 
-const diagramPath = path.resolve(process.cwd(), (argv.diagram as string).trim());
+const diagramPath = path.resolve(process.cwd(), argv.diagram.trim());
 
 const server = new McpServer({ name: 'excalidraw-mcp', version: '0.1.0' });
 
-server.registerTool(
-  'getFullDiagramState',
-  {
-    description:
-      'Return a markdown representation of the complete diagram, including nodes, relationships, labels, frames, and colors.',
-  },
-  async (): Promise<CallToolResult> => {
-    const fileContent = await fs.readFile(diagramPath, 'utf8');
-    const parsed = JSON.parse(fileContent);
-
-    const diagram = parseDiagram(parsed);
-    const markdown = formatDiagramMarkdown(diagram);
-
-    return { content: [{ type: 'text', text: markdown }] };
-  },
-);
+registerAllTools(server, diagramPath);
 
 const main = async () => {
   const transport = new StdioServerTransport();
