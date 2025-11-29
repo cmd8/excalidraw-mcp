@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/cmd8/excalidraw-mcp/compare/v1.1.1...v1.2.0) (2025-11-29)
+
+
+### Features
+
+* add mutation tools ([#1](https://github.com/cmd8/excalidraw-mcp/issues/1)) ([17f4157](https://github.com/cmd8/excalidraw-mcp/commit/17f4157b7f32e13de2e0c4e091690c272952a86e))
+
 ## [1.1.1](https://github.com/cmd8/excalidraw-mcp/compare/v1.1.0...v1.1.1) (2025-11-27)
 
 

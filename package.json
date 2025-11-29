@@ -1,6 +1,6 @@
 {
     "name": "@cmd8/excalidraw-mcp",
-    "version": "1.1.1",
+    "version": "1.2.0",
     "description": "Model Context Protocol server for Excalidraw diagrams.",
     "type": "module",
     "main": "dist/index.js",
