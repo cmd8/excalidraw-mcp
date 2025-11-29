@@ -1,5 +1,10 @@
 import type { Diagram, Node } from './types';
 
+enum ItemType {
+  Edge = 'edge',
+  Node = 'node',
+}
+
 type GroupBucket = { title: string; edges: string[]; nodes: string[] };
 
 type Section = { title: string; groups: GroupBucket[] };
@@ -64,93 +69,88 @@ No nodes or edges.`;
 ${renderedGroups}`;
 };
 
-export const formatDiagramMarkdown = (diagram: Diagram): string => {
-  const nodeById = new Map(diagram.nodes.map((node) => [node.id, node]));
-  const frameById = new Map(diagram.frames.map((frame) => [frame.id, frame]));
+const buildSections = (diagram: Diagram): Section[] => {
+  const nodeById = new Map(diagram.nodes.map((n) => [n.id, n]));
+  const frameById = new Map(diagram.frames.map((f) => [f.id, f]));
 
-  type SectionKey = string | null;
-  type GroupKey = string | null;
+  const connectedNodeIds = new Set(
+    diagram.edges.flatMap((e) =>
+      [e.from, e.to].filter((id): id is string => id != null),
+    ),
+  );
 
-  const sections = new Map<
-    SectionKey,
-    { title: string; groups: Map<GroupKey, GroupBucket> }
-  >();
-
-  const ensureSection = (frameId: SectionKey) => {
-    if (sections.has(frameId)) {
-      return sections.get(frameId)!;
-    }
-    const frame = frameId ? frameById.get(frameId) : null;
-    const section = {
-      title: frameTitle({ frameId, frameName: frame?.name ?? null }),
-      groups: new Map<GroupKey, GroupBucket>(),
-    };
-    sections.set(frameId, section);
-    return section;
+  type Item = {
+    type: ItemType;
+    frameId: string | null;
+    groupId: string | null;
+    line: string;
   };
 
-  const ensureGroup = (
-    section: { groups: Map<GroupKey, GroupBucket> },
-    groupId: GroupKey,
-  ) => {
-    if (section.groups.has(groupId)) {
-      return section.groups.get(groupId)!;
-    }
-    const group: GroupBucket = {
-      title: groupId ? `Group ${groupId}` : 'Ungrouped',
+  const items: Item[] = [
+    ...diagram.edges.map((e) => ({
+      type: ItemType.Edge,
+      frameId: e.frameId ?? null,
+      groupId: e.groupIds[0] ?? null,
+      line: edgeLine({
+        from: e.from,
+        to: e.to,
+        label: e.label,
+        fromNode: e.from ? nodeById.get(e.from) : undefined,
+        toNode: e.to ? nodeById.get(e.to) : undefined,
+      }),
+    })),
+    ...diagram.nodes
+      .filter((n) => !connectedNodeIds.has(n.id))
+      .map((n) => ({
+        type: ItemType.Node,
+        frameId: n.frameId ?? null,
+        groupId: n.groupIds[0] ?? null,
+        line: nodeInline(n),
+      })),
+  ];
+
+  const sectionMap = new Map<string | null, Map<string | null, GroupBucket>>();
+
+  for (const item of items) {
+    const groups =
+      sectionMap.get(item.frameId) ?? new Map<string | null, GroupBucket>();
+    sectionMap.set(item.frameId, groups);
+
+    const group = groups.get(item.groupId) ?? {
+      title: item.groupId ? `Group ${item.groupId}` : 'Ungrouped',
       edges: [],
       nodes: [],
     };
-    section.groups.set(groupId, group);
-    return group;
-  };
+    groups.set(item.groupId, group);
 
-  const connectedNodeIds = new Set<string>();
-
-  for (const edge of diagram.edges) {
-    const section = ensureSection(edge.frameId ?? null);
-    const group = ensureGroup(section, edge.groupIds[0] ?? null);
-    group.edges.push(
-      edgeLine({
-        from: edge.from,
-        to: edge.to,
-        label: edge.label,
-        fromNode: edge.from ? nodeById.get(edge.from) : undefined,
-        toNode: edge.to ? nodeById.get(edge.to) : undefined,
-      }),
-    );
-    if (edge.from) {
-      connectedNodeIds.add(edge.from);
+    if (item.type === ItemType.Edge) {
+      group.edges.push(item.line);
+    } else {
+      group.nodes.push(item.line);
     }
-    if (edge.to) {
-      connectedNodeIds.add(edge.to);
-    }
-  }
-
-  for (const node of diagram.nodes) {
-    if (connectedNodeIds.has(node.id)) {
-      continue;
-    }
-    const section = ensureSection(node.frameId ?? null);
-    const group = ensureGroup(section, node.groupIds[0] ?? null);
-    group.nodes.push(nodeInline(node));
   }
 
   for (const frame of diagram.frames) {
-    ensureSection(frame.id);
+    if (!sectionMap.has(frame.id)) {
+      sectionMap.set(frame.id, new Map());
+    }
   }
 
-  const orderedSections: Section[] = [];
-  for (const section of sections.values()) {
-    orderedSections.push({
-      title: section.title,
-      groups: Array.from(section.groups.values()),
-    });
-  }
+  return Array.from(sectionMap.entries()).map(([frameId, groups]) => {
+    const frame = frameId ? frameById.get(frameId) : null;
+    return {
+      title: frameTitle({ frameId, frameName: frame?.name ?? null }),
+      groups: Array.from(groups.values()),
+    };
+  });
+};
 
-  if (orderedSections.length === 0) {
+export const formatDiagramMarkdown = (diagram: Diagram): string => {
+  const sections = buildSections(diagram);
+
+  if (sections.length === 0) {
     return 'No nodes or edges.';
   }
 
-  return orderedSections.map(renderSection).join('\n\n').trimEnd();
+  return sections.map(renderSection).join('\n\n').trimEnd();
 };

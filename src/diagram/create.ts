@@ -6,7 +6,7 @@ import {
   estimateTextWidth,
   generateId,
 } from './primitives';
-import type { ExcalidrawElement } from './types';
+import { ElementType, type ExcalidrawElement } from './types';
 
 export type CreateNodeOptions = {
   label: string;
@@ -74,12 +74,12 @@ export const createNodeElements = (
     ...shapeBase,
     type: shape,
     roundness: shape === 'rectangle' ? { type: 3 } : null,
-    boundElements: [{ id: textBase.id, type: 'text' }],
+    boundElements: [{ id: textBase.id, type: ElementType.Text }],
   };
 
   const textElement: ExcalidrawElement = {
     ...textBase,
-    type: 'text',
+    type: ElementType.Text,
     roundness: null,
     boundElements: [],
     text: label,
@@ -177,9 +177,11 @@ export const createEdgeElements = (
   const edgeElement: ExcalidrawElement = {
     ...edgeBase,
     id: edgeId,
-    type: 'arrow',
+    type: ElementType.Arrow,
     roundness: { type: 2 },
-    boundElements: label ? [{ id: `${edgeId}-label`, type: 'text' }] : [],
+    boundElements: label
+      ? [{ id: `${edgeId}-label`, type: ElementType.Text }]
+      : [],
     points: [
       [0, 0],
       [toX - fromX, toY - fromY],
@@ -220,7 +222,7 @@ export const createEdgeElements = (
     const labelElement: ExcalidrawElement = {
       ...labelBase,
       id: `${edgeId}-label`,
-      type: 'text',
+      type: ElementType.Text,
       roundness: null,
       boundElements: [],
       text: label,
@@ -238,15 +240,15 @@ export const createEdgeElements = (
   }
 
   if (Array.isArray(fromNode.boundElements)) {
-    fromNode.boundElements.push({ id: edgeId, type: 'arrow' });
+    fromNode.boundElements.push({ id: edgeId, type: ElementType.Arrow });
   } else {
-    fromNode.boundElements = [{ id: edgeId, type: 'arrow' }];
+    fromNode.boundElements = [{ id: edgeId, type: ElementType.Arrow }];
   }
 
   if (Array.isArray(toNode.boundElements)) {
-    toNode.boundElements.push({ id: edgeId, type: 'arrow' });
+    toNode.boundElements.push({ id: edgeId, type: ElementType.Arrow });
   } else {
-    toNode.boundElements = [{ id: edgeId, type: 'arrow' }];
+    toNode.boundElements = [{ id: edgeId, type: ElementType.Arrow }];
   }
 
   return { ok: true, elements: result };

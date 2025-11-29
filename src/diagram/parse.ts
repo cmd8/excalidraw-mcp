@@ -1,8 +1,11 @@
 import { shapeEnum } from '@/tools/schemas';
 import { emojiForColorAndShape } from '@/utils/emoji';
-import type { Diagram, NodeShape } from './types';
+import { ElementType, type Diagram, type NodeShape } from './types';
 
-const nodeTypes: Set<string> = new Set([...shapeEnum.options, 'text']);
+const nodeTypes: Set<string> = new Set([
+  ...shapeEnum.options,
+  ElementType.Text,
+]);
 
 // Separate from ExcalidrawElement - all fields optional for defensive parsing of untrusted JSON
 type RawElement = {
@@ -50,8 +53,10 @@ export const parseDiagram = (raw: RawFile): Diagram => {
 
   const frames = elements
     .filter(
-      (element): element is RawElement & { id: string; type: 'frame' } =>
-        element.type === 'frame' && typeof element.id === 'string',
+      (
+        element,
+      ): element is RawElement & { id: string; type: ElementType.Frame } =>
+        element.type === ElementType.Frame && typeof element.id === 'string',
     )
     .map((frame) => ({
       id: frame.id,
@@ -69,7 +74,7 @@ export const parseDiagram = (raw: RawFile): Diagram => {
         typeof element.id === 'string' &&
         typeof element.type === 'string' &&
         isNodeShape(element.type) &&
-        (element.type !== 'text' || !element.containerId),
+        (element.type !== ElementType.Text || !element.containerId),
     )
     .map((element) => {
       const shape = element.type;
@@ -111,8 +116,10 @@ export const parseDiagram = (raw: RawFile): Diagram => {
 
   const edges = elements
     .filter(
-      (element): element is RawElement & { id: string; type: 'arrow' } =>
-        element.type === 'arrow' && typeof element.id === 'string',
+      (
+        element,
+      ): element is RawElement & { id: string; type: ElementType.Arrow } =>
+        element.type === ElementType.Arrow && typeof element.id === 'string',
     )
     .map((edge) => {
       const label =

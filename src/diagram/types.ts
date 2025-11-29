@@ -1,5 +1,14 @@
 import type { ShapeType } from '@/tools/schemas';
 
+export enum ElementType {
+  Arrow = 'arrow',
+  Text = 'text',
+  Frame = 'frame',
+  Rectangle = 'rectangle',
+  Ellipse = 'ellipse',
+  Diamond = 'diamond',
+}
+
 export type NodeShape = ShapeType | 'text';
 
 export type Frame = { id: string; name: string | null };
